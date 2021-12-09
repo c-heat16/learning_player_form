@@ -5,17 +5,12 @@ import math
 import time
 import torch
 
-import numpy as np
-import torch.nn.functional as F
 import torch.distributed as dist
 
 from torch import optim
-from scipy.special import softmax
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-from sklearn.metrics import cohen_kappa_score, precision_score, recall_score, f1_score
 
-from argparse import Namespace
 from transformers import get_constant_schedule_with_warmup
 from torch.nn.parallel import DistributedDataParallel as DDP
 from datasets import PlayerFormDataset
