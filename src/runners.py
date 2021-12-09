@@ -51,7 +51,6 @@ class PlayerFormRunner(object):
         self.version = getattr(self.args, 'version', 'v1')
         self.lr = getattr(self.args, 'lr', 1e-5)
         self.l2 = getattr(self.args, 'l2', 0.0001)
-        # self.supplemental_l2 = getattr(self.args, 'l2', 0.0001)
         self.max_seq_len = getattr(self.args, 'max_seq_len', 12)
         self.log_every = getattr(self.args, 'log_every', 10)
         self.save_model_every = getattr(self.args, 'save_model_every', -1)
@@ -150,7 +149,6 @@ class PlayerFormRunner(object):
 
         self.start_epoch = 0
         if self.mode != 'train':
-            # ckpt_file = self.args.out_dir
             if self.args.train:
                 ckpt_epoch_offset = 1
                 ckpt_file = os.path.join(self.args.model_save_dir,

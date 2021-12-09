@@ -67,16 +67,16 @@ def read_model_args(fp):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ab_data', default='/home/czh/sata1/SportsAnalytics/ab_seqs/ab_seqs_v10',
+    parser.add_argument('--ab_data', default='/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v10',
                         help='Dir where AB data can be found')
     parser.add_argument('--career_data',
-                        default='/home/czh/sata1/SportsAnalytics/player_career_data',
+                        default='/home/czh/sata1/learning_player_form/player_career_data',
                         help='Where to find player career data')
     parser.add_argument('--whole_game_record_dir',
-                        default='/home/czh/sata1/SportsAnalytics/whole_game_records',
+                        default='/home/czh/sata1/learning_player_form/whole_game_records',
                         help='Where to find player career data')
 
-    parser.add_argument('--out', default='../out/player_form_v2', help='Directory to put output')
+    parser.add_argument('--out', default='../out/player_form', help='Directory to put output')
     parser.add_argument('--config_dir', default='../config', help='Directory to find config data')
     parser.add_argument('--player_type', default='batter', help='Type of player to model. batter or pitcher')
     parser.add_argument('--do_mem_cache', default=False, type=str2bool,
@@ -145,6 +145,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--player_pos_source', default='mlb')
     parser.add_argument('--pitch_type_config_fp', default='../config/pitch_type_id_mapping.json')
+    parser.add_argument('--player_bio_info_fp', default='../config/statcast_id_to_bio_info.json')
     parser.add_argument('--player_id_map_fp', default='../config/all_player_id_mapping.json')
     parser.add_argument('--team_stadiums_fp', default='../config/team_stadiums.json')
 

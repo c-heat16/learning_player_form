@@ -2,7 +2,6 @@ __author__ = 'Connor Heaton'
 
 
 import time
-import math
 import sqlite3
 import argparse
 
@@ -73,8 +72,6 @@ def construct_at_bat_sequences(args):
     all_game_pks = get_game_ids(db_fp, games_table, reverse_pk_order=reverse_pk_order,
                                 start_year=args.start_year, end_year=args.end_year)
     print('\tlen(all_game_pks): {}'.format(len(all_game_pks)))
-    # print('all_game_pks.index(570334): {}'.format(all_game_pks.index(570334)))
-    # print('570334 in all_game_pks: {}'.format(570334 in all_game_pks))
 
     m = Manager()
     ab_q = m.Queue()

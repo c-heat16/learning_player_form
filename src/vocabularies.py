@@ -2,10 +2,7 @@ __author__ = 'Connor Heaton'
 
 import os
 import json
-import math
 import itertools
-
-import numpy as np
 
 
 def jsonKeys2int(x):
@@ -428,12 +425,6 @@ class GeneralGamestateDeltaVocab(BaseVocab):
         else:
             gamestate_id = self.vocab.get(gamestate_key, -1)
 
-        # if gamestate_id in [-1]:
-        #     print('*' * 25)
-        #     print('gamestate: {}'.format(gamestate))
-        #     print('gamestate_id: {}'.format(gamestate_id))
-        #     print('*' * 25)
-
         return gamestate_id
 
     def save_vocab(self, out_dir):
@@ -478,14 +469,3 @@ class GeneralGamestateDeltaVocab(BaseVocab):
 
         with open(reverse_out_fp, 'w+') as f:
             f.write('{}'.format(json.dumps(self.reverse_vocab, indent=2)))
-
-
-
-
-
-
-
-
-
-
-

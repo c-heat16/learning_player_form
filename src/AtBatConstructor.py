@@ -1,6 +1,6 @@
 __author__ = 'Connor Heaton'
 
-import os
+
 import json
 import time
 import sqlite3
@@ -474,14 +474,6 @@ class AtBatConstructor(object):
             career_contact_pct_sum = pitcher_df['Contact_pct'].sum()
             career_contact_pct_avg = pitcher_df['Contact_pct'].mean()
 
-            # pitcher_df['Swing_n'] = pitcher_df['Pitches'] * pitcher_df['Swing_pct']
-            # total_ip = pitcher_df['IP'].sum()
-            # total_batters_faced = pitcher_df['TBF'].sum()
-            # total_pitches = pitcher_df['Pitches'].sum()
-            # total_swing_n = pitcher_df['Swing_n'].sum()
-            # pitcher_df['Contact_n'] = pitcher_df['Swing_n'] * pitcher_df['Contact_pct']
-            # total_contact_n = pitcher_df['Contact_n'].sum()
-
             # Pitch percents
             career_fb_pct = pitcher_df['FB_pct'].mean()
             career_sl_pct = pitcher_df['SL_pct'].mean()
@@ -549,14 +541,6 @@ class AtBatConstructor(object):
             career_ld_sum = pitcher_df['LD'].sum()
             career_ld_avg = pitcher_df['LD'].mean()
 
-            # total_grounballs = pitcher_df['GB'].sum()
-            # total_flyballs = pitcher_df['FB'].sum()
-            # total_linedrive = pitcher_df['LD'].sum()
-            # total_bip = total_grounballs + total_flyballs + total_linedrive
-            # career_groundball_pct = total_grounballs / total_bip
-            # career_flyball_pct = total_flyballs / total_bip
-            # career_linedrive_pct = total_linedrive / total_bip
-
             career_era = pitcher_df['ERA'].mean()
             career_hld_avg = pitcher_df['HLD'].mean()
             career_hld_sum = pitcher_df['HLD'].sum()
@@ -581,7 +565,7 @@ class AtBatConstructor(object):
             career_whip_avg = pitcher_df['WHIP'].mean()
             career_whip_sum = pitcher_df['WHIP'].sum()
 
-            # Fancy v5 shiz
+            # v5
             career_war_avg = pitcher_df['WAR'].mean()
             career_war_sum = pitcher_df['WAR'].sum()
             career_babip_avg = pitcher_df['BABIP'].mean()

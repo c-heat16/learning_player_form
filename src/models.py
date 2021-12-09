@@ -55,10 +55,8 @@ class RawDataProjectionModule(nn.Module):
 
     def forward(self, x):
         for i in range(self.n_layers):
-            # if i != 0:
             x = self.dropout(x)
 
-            # if self.do_layernorm and 0 < i < (self.n_layers - 1):
             if self.do_layernorm and i > 0:
                 norm_layer = getattr(self, 'proj_layernorm_{}'.format(i))
                 x = norm_layer(x)
@@ -66,9 +64,7 @@ class RawDataProjectionModule(nn.Module):
                 norm_layer = getattr(self, 'proj_bn_{}'.format(i))
                 x = norm_layer(x)
 
-            # print('i: {} x: {}'.format(i, x.shape))
             proj_layer = getattr(self, 'proj_layer_{}'.format(i))
-            # print('proj_layer: {}'.format(proj_layer.weight.shape))
             x = proj_layer(x)
 
             if self.suppress_final_activation and i == self.n_layers - 1:
@@ -93,7 +89,6 @@ class PlayerFormModel(nn.Module):
         self.token_mask_pct = getattr(self.args, 'token_mask_pct', 0.0)
         self.mask_override_prob = getattr(self.args, 'mask_override_prob', 0.15)
         self.pad_mask_pct = getattr(self.args, 'pad_mask_pct', 0.0)
-        # self.gs_token_predict_pct = getattr(self.args, 'gs_token_predict_pct', 0.15)
         self.n_transformer_layers = getattr(self.args, 'n_layers', 6)
         self.n_attn = getattr(self.args, 'n_attn', 8)
         self.n_raw_data_proj_layers = getattr(self.args, 'n_raw_data_proj_layers', 2)
@@ -119,9 +114,6 @@ class PlayerFormModel(nn.Module):
         self.use_handedness = getattr(self.args, 'use_handedness', True)
         self.both_player_positions = getattr(self.args, 'both_player_positions', False)
         self.both_player_handedness = getattr(self.args, 'both_player_handedness', True)
-        # self.first_principles = getattr(self.args, 'first_principles', False)
-        # self.use_statcast_data = getattr(self.args, 'use_statcast_data', True)
-        # self.use_player_data = getattr(self.args, 'use_player_data', True)
 
         print('********** PlayerFormModel **********')
         self.supplemental_input_dim = self.raw_pitcher_data_dim + self.raw_batter_data_dim \

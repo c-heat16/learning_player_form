@@ -42,9 +42,7 @@ def read_file_lines(fp, bad_data_fps=None):
 def bucketize(data, min, max, n_buckets):
     new_data = []
     bucket_size = (max - min) / n_buckets
-    # print('min: {} max: {} n_buckets: {} = bucket_size: {}'.format(min, max, n_buckets, bucket_size))
     for x in data:
-        # print('x: {}'.format(x))
         try:
             if x < min:
                 x = min
@@ -53,7 +51,6 @@ def bucketize(data, min, max, n_buckets):
 
             x += abs(min)
             bucket = int(x // bucket_size)
-            # print('bucket: {}'.format(bucket))
             if bucket < 0:
                 bucket = 0
             elif bucket >= n_buckets:
@@ -91,9 +88,6 @@ def parse_pitches(pitch_j, parse_pos, norm_vals=None):
                    p['hit_distance_sc'], p['launch_speed'], p['launch_angle']] for p in pitch_j]
     balls, strikes, pitch_type, pitch_speed, plate_x, plate_z, release_x, release_y, release_z, spin_rate, extension, hc_x, hc_y, vx0, vy0, vz0, ax, ay, az, hit_dist, launch_speed, launch_angle = map(
         list, zip(*pitch_info))
-    # print('len(pitch_speed): {}'.format(len(pitch_speed)))
-    # print('len(release_x): {}'.format(len(release_x)))
-    # print('len(hc_x): {}'.format(len(hc_x)))
 
     pitch_speed = fill_null(pitch_speed, 0, norm_val=norm_vals.get('release_speed', 1.0))
     release_x = fill_null(release_x, 0, norm_val=norm_vals.get('release_pos_x', 1.0))
@@ -116,15 +110,10 @@ def parse_pitches(pitch_j, parse_pos, norm_vals=None):
     rv_inputs = [pitch_speed, release_x, release_y, release_z, spin_rate, extension, hc_x, hc_y, vx0, vy0, vz0,
                  ax, ay, az, hit_dist, launch_speed, launch_angle]
     rv_inputs = list(zip(*rv_inputs))
-    # print('len(rv_inputs): {}'.format(len(rv_inputs)))
 
     if parse_pos:
-        # plate_x_raw = plate_x[:]
         plate_x = bucketize(plate_x, min=-2, max=2, n_buckets=8)
-        # print('plate_x_raw: {}\n\tnew: {}'.format(plate_x_raw, plate_x))
-        # plate_z_raw = plate_z[:]
         plate_z = bucketize(plate_z, min=0, max=4, n_buckets=9)
-        # print('plate_z_raw: {}\n\tnew: {}'.format(plate_z_raw, plate_z))
 
     return balls, strikes, pitch_type, plate_x, plate_z, rv_inputs
 
@@ -147,11 +136,6 @@ def compare_states(curr_state, last_state, fill_value):
     delta = {}
     if last_state is None:
         for attr_name in attrs_to_compare:
-            # attr_val = curr_state.get(attr_name, 0)
-            # if attr_name != 'score':
-            #     delta[attr_name] = str(attr_val) if attr_val == 0 else '+{}'.format(attr_val)
-            # else:
-            #     delta[attr_name] = '0'
             delta[attr_name] = fill_value
     else:
         for attr_name in attrs_to_compare:
@@ -175,10 +159,8 @@ def compare_states(curr_state, last_state, fill_value):
 def find_state_deltas_v2(n_balls, n_strikes, outs_when_up, inning_topbot, next_state, batter_score,
                          on_1b, on_2b, on_3b, last_state=None):
     deltas = []
-    p_state_dict = {}
     this_last_state = last_state
     for p_idx, (balls, strikes) in enumerate(zip(n_balls, n_strikes)):
-        # print('*** Evaluating pitch {} ***'.format(p_idx))
         p_state_dict = {'balls': balls,
                         'strikes': strikes,
                         'outs': outs_when_up,
@@ -186,10 +168,7 @@ def find_state_deltas_v2(n_balls, n_strikes, outs_when_up, inning_topbot, next_s
                         'on_2b': on_2b,
                         'on_3b': on_3b,
                         'score': batter_score}
-        # print('p_state_dict:\n{}'.format(json.dumps(p_state_dict, indent=2)))
-        # print('this_last_state:\n{}'.format(json.dumps(this_last_state, indent=2)))
         p_delta, this_last_state = compare_states(p_state_dict, this_last_state, '[BOI]')
-        # print('p_delta:\n{}'.format(json.dumps(p_delta, indent=2)))
         deltas.append(p_delta)
 
     p_state_dict = {}
@@ -207,20 +186,13 @@ def find_state_deltas_v2(n_balls, n_strikes, outs_when_up, inning_topbot, next_s
         p_state_dict['on_1b'] = 0 if next_state['on_1b'] in [None, 0] else 1
         p_state_dict['on_2b'] = 0 if next_state['on_2b'] in [None, 0] else 1
         p_state_dict['on_3b'] = 0 if next_state['on_3b'] in [None, 0] else 1
-        p_state_dict['outs'] = next_state['outs_when_up'] if next_state[
-                                                                 'inning_topbot'].lower() == inning_topbot.lower() else 3
-        p_state_dict['score'] = next_state['bat_score'] if next_state[
-                                                               'inning_topbot'].lower() == inning_topbot.lower() else \
-            next_state['fld_score']
+        p_state_dict['outs'] = next_state['outs_when_up'] \
+            if next_state['inning_topbot'].lower() == inning_topbot.lower() else 3
+        p_state_dict['score'] = next_state['bat_score'] \
+            if next_state['inning_topbot'].lower() == inning_topbot.lower() else next_state['fld_score']
 
-    # print('*** COMPARING FINAL STATE ***')
-    # print('p_state_dict:\n{}'.format(json.dumps(p_state_dict, indent=2)))
-    # print('this_last_state:\n{}'.format(json.dumps(this_last_state, indent=2)))
-    # print('deltas: {}'.format(deltas))
     p_delta, this_last_state = compare_states(p_state_dict, this_last_state, '[BOI]')
     deltas.append(p_delta)
-    # print('p_delta:\n{}'.format(json.dumps(p_delta, indent=2)))
-    # input('*' * 25)
 
     return deltas, this_last_state
 
@@ -236,20 +208,15 @@ def parse_json(j, j_type, max_value_data=None):
         avoid_keys = []
         handedness = None
 
-    # print('j_type: {} data_scopes_to_use: {}'.format(j_type, data_scopes_to_use))
-
     if max_value_data is not None:
-        # print('MAX VALUE DATA BEING USED')
         type_max_value_data = max_value_data[j_type]
     else:
         type_max_value_data = {}
 
-    # data = []
     data = {'handedness': handedness}
     for k1, v1 in j.items():
         k1_norm_vals = type_max_value_data.get(k1, {})
         if k1 not in avoid_keys:
-            # print('key {} is being parsed...'.format(k1))
             k1_data = []
             for k2, v2 in v1.items():
                 if type(v2) == list:
@@ -265,17 +232,8 @@ def parse_json(j, j_type, max_value_data=None):
                     else:
                         k2_norm_val = k1_norm_vals.get(k2, 1.0)
                         new_v2 = v2 / k2_norm_val if k2_norm_val != 0 else v2
-                        # print('k1: {} k2: {} raw v2: {} max val: {} new v2: {}'.format(k1,
-                        #                                                                k2,
-                        #                                                                v2,
-                        #                                                                k2_norm_val,
-                        #                                                                new_v2))
                     k1_data.append(float(new_v2))
             data[k1] = k1_data
-        # elif k1 in avoid_keys:
-        #     print('key {} in keys to avoid...'.format(k1))
-        # elif k1 not in data_scopes_to_use:
-        #     print('key {} is in data scopes not to use...'.format(k1))
 
     if math.nan in data:
         input('j: {}'.format(j))
@@ -296,22 +254,9 @@ class PlayerFormDataset(Dataset):
         self.form_ab_window_size = getattr(self.args, 'form_ab_window_size', 25)
         self.min_form_ab_window_size = getattr(self.args, 'min_form_ab_window_size', 20)
         self.min_ab_to_be_included_in_dataset = getattr(self.args, 'min_ab_to_be_included_in_dataset', 200)
-        self.ab_data_dir = getattr(self.args, 'ab_data', '/home/czh/sata1/SportsAnalytics/ab_seqs/ab_seqs_v7')
+        self.ab_data_dir = getattr(self.args, 'ab_data', '/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v7')
         self.bad_data_fps = getattr(self.args, 'bad_data_fps', [])
         self.do_mem_cache = getattr(self.args, 'do_mem_cache', False)
-        # self.use_intermediate_data = getattr(self.args, 'use_intermediate_data', False)
-        # self.try_mt = getattr(self.args, 'try_mt', False)
-        # self.n_mt = getattr(self.args, 'n_mt', False)
-        # self.try_mt_minibatch = getattr(self.args, 'try_mt_minibatch', False)
-        # self.n_mt_minibatch = getattr(self.args, 'n_mt_minibatch', 2)
-
-        # if self.use_intermediate_data:
-        #     print('*** PlayerFormDataset_v2 using intermediate data ***')
-        #     print('self.ab_data_dir: {}'.format(self.ab_data_dir))
-        #     self.intermediate_data_dir = os.path.join(self.ab_data_dir, 'intermediate_data')
-        #     print('self.intermediate_data_dir: {}'.format(self.intermediate_data_dir))
-        #     if not os.path.exists(self.intermediate_data_dir):
-        #         os.makedirs(self.intermediate_data_dir)
 
         self.batter_data_scopes_to_use = getattr(self.args, 'batter_data_scopes_to_use',
                                                  ['career', 'season', 'last15', 'this_game'])
@@ -328,21 +273,21 @@ class PlayerFormDataset(Dataset):
                                                                'distribution_based_player_sampling_prob', 0.25)
         self.full_ab_window_size_prob = getattr(self.args, 'full_ab_window_size_prob', 1.0)
 
-        print('PlayerFormDataset_v2 batter_data_scopes_to_use: {}'.format(self.batter_data_scopes_to_use))
-        print('PlayerFormDataset_v2 pitcher_data_scopes_to_use: {}'.format(self.pitcher_data_scopes_to_use))
+        print('PlayerFormDataset batter_data_scopes_to_use: {}'.format(self.batter_data_scopes_to_use))
+        print('PlayerFormDataset pitcher_data_scopes_to_use: {}'.format(self.pitcher_data_scopes_to_use))
 
         # other parms now
         self.max_seq_len = getattr(self.args, 'max_seq_len', 200)
         self.max_view_len = getattr(self.args, 'max_view_len', 125)
         self.view_size = getattr(self.args, 'view_size', 15)
-        # self.view_step_size = getattr(self.args, 'view_step_size', 5)
         self.n_views = getattr(self.args, 'n_views', 2)
         self.min_view_step_size = getattr(self.args, 'min_view_step_size', 1)
         self.max_view_step_size = getattr(self.args, 'max_view_step_size', 5)
 
-        self.career_data_dir = getattr(self.args, 'career_data', '/home/czh/sata1/SportsAnalytics/player_career_data')
+        self.career_data_dir = getattr(self.args, 'career_data',
+                                       '/home/czh/sata1/learning_player_form/player_career_data')
         self.whole_game_record_dir = getattr(self.args, 'whole_game_record_dir',
-                                             '/home/czh/sata1/SportsAnalytics/whole_game_records')
+                                             '/home/czh/sata1/learning_player_form/whole_game_records')
         self.parse_plate_pos_to_id = getattr(self.args, 'parse_plate_pos_to_id', False)
 
         pitch_type_config_fp = getattr(self.args, 'pitch_type_config_fp', '../config/pitch_type_id_mapping.json')
@@ -361,7 +306,6 @@ class PlayerFormDataset(Dataset):
         self.pitch_type_mapping = json.load(open(pitch_type_config_fp))
         self.player_id_map = json.load(open(player_id_map_fp), object_hook=jsonKeys2int)
         self.player_bio_info_mapping = json.load(open(player_bio_info_fp), object_hook=jsonKeys2int)
-        # self.player_id_n_pitches = json.load(open(player_id_n_pitches_fp), object_hook=jsonKeys2int)
         self.team_stadium_map = json.load(open(team_stadiums_fp))
 
         self.handedness_id_map = {'L': 0, 'R': 1}
@@ -390,7 +334,7 @@ class PlayerFormDataset(Dataset):
             print('# players: {}'.format(self.n_players))
             print('# player records: {}'.format(self.n_player_items))
         else:
-            print('$$$$ PlayerFormDataset_v2 in apply mode $$$$')
+            print('$$$$ PlayerFormDataset in apply mode $$$$')
             self.memory_cache = memory_cache
 
         if self.gamestate_vocab is None:
@@ -770,7 +714,6 @@ class PlayerFormDataset(Dataset):
                                                last_state=last_gamestate)
 
         state_deltas = state_deltas[1:]
-        # print('state_deltas: {}'.format(state_deltas))
         state_delta_ids = [self.gamestate_vocab.get_id(sd) for sd in state_deltas]
 
         if -1 in state_delta_ids:

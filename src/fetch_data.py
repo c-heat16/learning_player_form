@@ -1,13 +1,9 @@
 __author__ = 'Connor Heaton'
 
 
-import os
-import time
 import math
 import argparse
-import pybaseball as pb
 
-import sqlite3
 from queue import Queue
 from threading import Thread
 from datetime import timedelta, date
@@ -210,7 +206,6 @@ def fetch_data(args):
                 pb_thread.start()
 
             print('Starting SQL statcast worker...')
-            # sql_thread.start()
             n_inserts = sql_worker.insert_items_from_q()
 
             print_str = '** Total statcast items inserted: {} **'.format(n_inserts)
