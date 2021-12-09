@@ -2,17 +2,10 @@ __author__ = 'Connor Heaton'
 
 import os
 import json
-import glob
 import math
 import torch
 import random
 
-import numpy as np
-from collections import defaultdict
-
-from bpe import Encoder
-from queue import Queue
-from threading import Thread
 from torch.utils.data import Dataset
 
 from vocabularies import GeneralGamestateDeltaVocab
