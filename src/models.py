@@ -37,7 +37,8 @@ class RawDataProjectionModule(nn.Module):
 
         for i in range(self.n_layers):
             if self.do_layernorm and i > 0:
-                setattr(self, 'proj_layernorm_{}'.format(i), nn.LayerNorm([self.hidden_dim], elementwise_affine=elementwise_affine))
+                setattr(self, 'proj_layernorm_{}'.format(i), nn.LayerNorm([self.hidden_dim],
+                                                                          elementwise_affine=elementwise_affine))
             elif self.do_batchnorm and i > 0:
                 setattr(self, 'proj_bn_{}'.format(i), nn.BatchNorm1d(self.hidden_dim))
 
