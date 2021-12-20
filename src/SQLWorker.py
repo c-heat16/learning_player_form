@@ -126,7 +126,7 @@ class SQLWorker(object):
 
         return success
 
-    def create_index(self, index_str):
+    def execute(self, index_str):
         c = self.conn.cursor()
         c.execute(index_str)
         self.conn.commit()

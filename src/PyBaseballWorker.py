@@ -40,7 +40,8 @@ class PyBaseballWorker(object):
     def query_statcast(self):
         for range_idx, (q_start_date, q_end_date) in enumerate(self.date_ranges):
             range_data = pb.statcast(start_dt=q_start_date.strftime("%Y-%m-%d"),
-                                     end_dt=q_end_date.strftime("%Y-%m-%d"))
+                                     end_dt=q_end_date.strftime("%Y-%m-%d"),
+                                     verbose=False)
             for item_data in range_data.values.tolist():
                 # print('item_data:\n{}'.format(item_data))
                 # print('Raw item data: {}'.format(item_data))
@@ -55,14 +56,14 @@ class PyBaseballWorker(object):
                 self.n_items_processed += 1
 
                 if self.n_items_processed % self.summary_every == 0:
-                    print('Worker {} pushed {} statcast items...'.format(self.t_id, self.n_items_processed))
+                    print('PyBaseballWorker {} pushed {} statcast items...'.format(self.t_id, self.n_items_processed))
                     print('\tcurr date range: {} to {}'.format(q_start_date.strftime("%Y-%m-%d"),
                                                                q_end_date.strftime("%Y-%m-%d")))
                     print('\tdate range {} of {}'.format(range_idx, len(self.date_ranges)))
 
         # print('* Worker {} pushed term signal for statcast *'.format(self.t_id))
         self.out_q.put(self.term_item)
-        print('* Worker {} pushed term signal for statcast\n\ttotal items pushed: {}'.format(self.t_id,
+        print('* PyBaseballWorker {} pushed term signal for statcast\n\ttotal items pushed: {}'.format(self.t_id,
                                                                                              self.n_items_processed))
 
     def query_pitching_by_season(self):
@@ -78,11 +79,11 @@ class PyBaseballWorker(object):
                 self.n_items_processed += 1
 
                 if self.n_items_processed % self.summary_every == 0:
-                    print('Worker {} pushed {} pitching_by_season items...'.format(self.t_id, self.n_items_processed))
+                    print('PyBaseballWorker {} pushed {} pitching_by_season items...'.format(self.t_id, self.n_items_processed))
                     print('\tlast year processed {}'.format(range_year))
 
         self.out_q.put(self.term_item)
-        print('* Worker {} pushed term signal for pitching_by_season\n\ttotal items pushed: {}'.format(self.t_id,
+        print('* PyBaseballWorker {} pushed term signal for pitching_by_season\n\ttotal items pushed: {}'.format(self.t_id,
                                                                                                        self.n_items_processed))
 
     def query_batting_by_season(self):
@@ -97,10 +98,10 @@ class PyBaseballWorker(object):
                 self.n_items_processed += 1
 
                 if self.n_items_processed % self.summary_every == 0:
-                    print('Worker {} pushed {} batting_by_season items...'.format(self.t_id, self.n_items_processed))
+                    print('PyBaseballWorker {} pushed {} batting_by_season items...'.format(self.t_id, self.n_items_processed))
                     print('\tlast year processed {}'.format(range_year))
 
         # print('* Worker {} pushed term signal for batting_by_season *'.format(self.t_id))
         self.out_q.put(self.term_item)
-        print('* Worker {} pushed term signal for batting_by_season\n\ttotal items pushed: {}'.format(self.t_id,
+        print('* PyBaseballWorker {} pushed term signal for batting_by_season\n\ttotal items pushed: {}'.format(self.t_id,
                                                                                                       self.n_items_processed))

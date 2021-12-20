@@ -222,17 +222,19 @@ def fetch_data(args):
             print('*' * len(print_str))
 
             print('Creating indices on statcast table...')
+            sql_worker.execute('analyze')
+            # sql_worker.execute('optimize')
 
             print('\tCreating index on game_pk...')
-            sql_worker.create_index('CREATE INDEX statcast_game_pk_idx on statcast(game_pk)')
+            sql_worker.execute('CREATE INDEX statcast_game_pk_idx on statcast(game_pk)')
             print('\tCreating index on batters...')
-            sql_worker.create_index('CREATE INDEX statcast_batter_idx on statcast(batter)')
+            sql_worker.execute('CREATE INDEX statcast_batter_idx on statcast(batter)')
             print('\tCreating index on pitchers...')
-            sql_worker.create_index('CREATE INDEX statcast_pitcher_idx on statcast(pitcher)')
+            sql_worker.execute('CREATE INDEX statcast_pitcher_idx on statcast(pitcher)')
             print('\tCreating index on game_year...')
-            sql_worker.create_index('CREATE INDEX statcast_game_year_idx on statcast(game_year)')
+            sql_worker.execute('CREATE INDEX statcast_game_year_idx on statcast(game_year)')
             print('\tCreating index on days_since_2000...')
-            sql_worker.create_index('CREATE INDEX statcast_days_since_2000 on statcast(days_since_2000)')
+            sql_worker.execute('CREATE INDEX statcast_days_since_2000 on statcast(days_since_2000)')
 
             print('Indices created on statcast table!')
 
@@ -590,11 +592,13 @@ def fetch_data(args):
             print('*' * len(print_str))
 
             print('Creating indices on pitching_by_season table...')
+            sql_worker.execute('analyze')
+            # sql_worker.execute('optimize')
 
             print('\tCreating index on player names...')
-            sql_worker.create_index('CREATE INDEX pitching_name_idx on pitching_by_season(Name)')
+            sql_worker.execute('CREATE INDEX pitching_name_idx on pitching_by_season(Name)')
             print('\tCreating index on season...')
-            sql_worker.create_index('CREATE INDEX pitching_season_idx on pitching_by_season(Season)')
+            sql_worker.execute('CREATE INDEX pitching_season_idx on pitching_by_season(Season)')
 
             print('Indices created on pitching_by_season_table!')
 
@@ -939,21 +943,30 @@ def fetch_data(args):
             print('*' * len(print_str))
 
             print('Creating indices on batting_by_season table...')
+            sql_worker.execute('analyze')
+            # sql_worker.execute('optimize')
 
             print('\tCreating index on player names...')
-            sql_worker.create_index('CREATE INDEX batting_name_idx on batting_by_season(Name)')
+            sql_worker.execute('CREATE INDEX batting_name_idx on batting_by_season(Name)')
             print('\tCreating index on season...')
-            sql_worker.create_index('CREATE INDEX batting_season_idx on batting_by_season(Season)')
+            sql_worker.execute('CREATE INDEX batting_season_idx on batting_by_season(Season)')
 
             print('Indices created on batting_by_season table!')
+
+        # if args.optimize:
+        #     print('Analyzing database...')
+        #     sql_worker.execute('PRAGMA analyze')
+        #     print('Optimizing database...')
+        #     sql_worker.execute('PRAGMA optimize')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--statcast', default=True, type=str2bool)
+    parser.add_argument('--statcast', default=False, type=str2bool)
     parser.add_argument('--pitching_by_season', default=False, type=str2bool)
     parser.add_argument('--batting_by_season', default=False, type=str2bool)
+    parser.add_argument('--optimize', default=True, type=str2bool)
 
     parser.add_argument('--start_year', default=2015, type=int)
     parser.add_argument('--start_month', default=1, type=int)
@@ -962,7 +975,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_days_to_query', default=3, type=int)
     parser.add_argument('--pb_summary_every', default=10000, type=int)
     parser.add_argument('--sql_summary_every', default=10000, type=int)
-    parser.add_argument('--sql_insert_size', default=250, type=int)
+    parser.add_argument('--sql_insert_size', default=500, type=int)
     parser.add_argument('--database_fp', default='../database/mlb.db')
     parser.add_argument('--term_item', default='<END>')
     parser.add_argument('--sql_n_sleep', default=5, type=int)
