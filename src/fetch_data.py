@@ -3,6 +3,7 @@ __author__ = 'Connor Heaton'
 
 import math
 import argparse
+import os.path
 
 from queue import Queue
 from threading import Thread
@@ -11,6 +12,12 @@ from sqlite3 import Error, IntegrityError
 
 from SQLWorker import SQLWorker
 from PyBaseballWorker import PyBaseballWorker
+
+# supress tqdm in pybaseball calls
+from tqdm import tqdm
+from functools import partialmethod
+
+tqdm.__init__ = partialmethod(tqdm.__init__, disable=True)
 
 
 def str2bool(v):
@@ -78,15 +85,15 @@ def fetch_data(args):
 
     if sql_worker.connect_to_db():
 
-        query_date_ranges = construct_query_date_range(args.start_year, args.start_month, args.start_day,
-                                                       args.end_year, args.n_days_to_query)
-        pb_worker_date_ranges = [[] for _ in range(n_pybaseball_workers)]
-        for range_idx, qd_range in enumerate(query_date_ranges):
-            pb_worker_date_ranges[range_idx % n_pybaseball_workers].append(qd_range)
-        print('len(pb_worker_date_ranges): {}'.format(len(pb_worker_date_ranges)))
-        print('len(pb_worker_date_ranges[0]): {}'.format(len(pb_worker_date_ranges[0])))
-
         if args.statcast:
+            query_date_ranges = construct_query_date_range(args.start_year, args.start_month, args.start_day,
+                                                           args.end_year, args.n_days_to_query)
+            pb_worker_date_ranges = [[] for _ in range(n_pybaseball_workers)]
+            for range_idx, qd_range in enumerate(query_date_ranges):
+                pb_worker_date_ranges[range_idx % n_pybaseball_workers].append(qd_range)
+            print('len(pb_worker_date_ranges): {}'.format(len(pb_worker_date_ranges)))
+            print('len(pb_worker_date_ranges[0]): {}'.format(len(pb_worker_date_ranges[0])))
+
             create_statcast_query_str = """CREATE TABLE IF NOT EXISTS statcast (
                                                             pitch_type TEXT,
                                                             game_date TEXT, 
@@ -177,6 +184,7 @@ def fetch_data(args):
                                                             post_fld_score INT,
                                                             if_fielding_alignment TEXT,
                                                             of_fielding_alignment TEXT,
+                                                            days_since_2000 INT,
                                                             PRIMARY KEY (game_pk, at_bat_number, pitch_number)
                                                            );"""
             sql_worker.create_table(create_statcast_query_str)
@@ -189,8 +197,8 @@ def fetch_data(args):
                                                                                  game_pk,pitcher_1,fielder_2_1,fielder_3,fielder_4,fielder_5,fielder_6,fielder_7,fielder_8,fielder_9,release_pos_y,estimated_ba_using_speedangle,
                                                                                  estimated_woba_using_speedangle,woba_value,woba_denom,babip_value,iso_value,launch_speed_angle,at_bat_number,pitch_number,
                                                                                  pitch_name,home_score,away_score,bat_score,fld_score,post_away_score,post_home_score,post_bat_score,post_fld_score,if_fielding_alignment,
-                                                                                 of_fielding_alignment)
-                                                                        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"""
+                                                                                 of_fielding_alignment, days_since_2000)
+                                                                        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,julianday(?) - julianday(?))"""
             sql_worker.insert_query = insert_statcast_query_str
 
             # pb_qs = [Queue() for _ in range(n_pybaseball_workers)]
@@ -206,12 +214,27 @@ def fetch_data(args):
                 pb_thread.start()
 
             print('Starting SQL statcast worker...')
-            n_inserts = sql_worker.insert_items_from_q()
+            n_inserts = sql_worker.insert_items_from_q(statcast=True)
 
             print_str = '** Total statcast items inserted: {} **'.format(n_inserts)
             print('*' * len(print_str))
             print(print_str)
             print('*' * len(print_str))
+
+            print('Creating indices on statcast table...')
+
+            print('\tCreating index on game_pk...')
+            sql_worker.create_index('CREATE INDEX statcast_game_pk_idx on statcast(game_pk)')
+            print('\tCreating index on batters...')
+            sql_worker.create_index('CREATE INDEX statcast_batter_idx on statcast(batter)')
+            print('\tCreating index on pitchers...')
+            sql_worker.create_index('CREATE INDEX statcast_pitcher_idx on statcast(pitcher)')
+            print('\tCreating index on game_year...')
+            sql_worker.create_index('CREATE INDEX statcast_game_year_idx on statcast(game_year)')
+            print('\tCreating index on days_since_2000...')
+            sql_worker.create_index('CREATE INDEX statcast_days_since_2000 on statcast(days_since_2000)')
+
+            print('Indices created on statcast table!')
 
         if args.pitching_by_season:
             create_pitching_by_season_query_str = """CREATE TABLE IF NOT EXISTS pitching_by_season (
@@ -566,6 +589,15 @@ def fetch_data(args):
             print(print_str)
             print('*' * len(print_str))
 
+            print('Creating indices on pitching_by_season table...')
+
+            print('\tCreating index on player names...')
+            sql_worker.create_index('CREATE INDEX pitching_name_idx on pitching_by_season(Name)')
+            print('\tCreating index on season...')
+            sql_worker.create_index('CREATE INDEX pitching_season_idx on pitching_by_season(Season)')
+
+            print('Indices created on pitching_by_season_table!')
+
         if args.batting_by_season:
             create_batting_by_season_query_str = """CREATE TABLE IF NOT EXISTS batting_by_season (
                                                                                     Season INT,
@@ -906,13 +938,22 @@ def fetch_data(args):
             print(print_str)
             print('*' * len(print_str))
 
+            print('Creating indices on batting_by_season table...')
+
+            print('\tCreating index on player names...')
+            sql_worker.create_index('CREATE INDEX batting_name_idx on batting_by_season(Name)')
+            print('\tCreating index on season...')
+            sql_worker.create_index('CREATE INDEX batting_season_idx on batting_by_season(Season)')
+
+            print('Indices created on batting_by_season table!')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--statcast', default=True, type=str2bool)
-    parser.add_argument('--pitching_by_season', default=True, type=str2bool)
-    parser.add_argument('--batting_by_season', default=True, type=str2bool)
+    parser.add_argument('--pitching_by_season', default=False, type=str2bool)
+    parser.add_argument('--batting_by_season', default=False, type=str2bool)
 
     parser.add_argument('--start_year', default=2015, type=int)
     parser.add_argument('--start_month', default=1, type=int)
@@ -920,7 +961,8 @@ if __name__ == '__main__':
     parser.add_argument('--end_year', default=2019, type=int)
     parser.add_argument('--n_days_to_query', default=3, type=int)
     parser.add_argument('--pb_summary_every', default=10000, type=int)
-    parser.add_argument('--sql_summary_every', default=1000, type=int)
+    parser.add_argument('--sql_summary_every', default=10000, type=int)
+    parser.add_argument('--sql_insert_size', default=250, type=int)
     parser.add_argument('--database_fp', default='../database/mlb.db')
     parser.add_argument('--term_item', default='<END>')
     parser.add_argument('--sql_n_sleep', default=5, type=int)
@@ -928,6 +970,10 @@ if __name__ == '__main__':
     parser.add_argument('--n_pybaseball_workers', default=1, type=int)
 
     args = parser.parse_args()
+
+    db_basedir = os.path.split(args.database_fp)[0]
+    if not os.path.exists(db_basedir):
+        os.makedirs(db_basedir)
 
     print('Fetching data...')
     fetch_data(args)
