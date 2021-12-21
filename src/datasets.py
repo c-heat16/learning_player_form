@@ -286,8 +286,8 @@ class PlayerFormDataset(Dataset):
 
         self.career_data_dir = getattr(self.args, 'career_data',
                                        '/home/czh/sata1/learning_player_form/player_career_data')
-        self.whole_game_record_dir = getattr(self.args, 'whole_game_record_dir',
-                                             '/home/czh/sata1/learning_player_form/whole_game_records')
+        # self.whole_game_record_dir = getattr(self.args, 'whole_game_record_dir',
+        #                                      '/home/czh/sata1/learning_player_form/whole_game_records')
         self.parse_plate_pos_to_id = getattr(self.args, 'parse_plate_pos_to_id', False)
 
         pitch_type_config_fp = getattr(self.args, 'pitch_type_config_fp', '../config/pitch_type_id_mapping.json')
@@ -295,9 +295,10 @@ class PlayerFormDataset(Dataset):
         player_id_map_fp = getattr(self.args, 'player_id_map_fp', '../config/all_player_id_mapping.json')
         team_stadiums_fp = getattr(self.args, 'team_stadiums_fp', '../config/team_stadiums.json')
         player_pos_source = getattr(self.args, 'player_pos_source', 'mlb')
+        record_norm_values_fp = getattr(self.args, 'record_norm_values_fp', '../config/max_values.json')
 
-        record_norm_values_fp = os.path.join(self.whole_game_record_dir,
-                                             'game_event_splits', 'stats', 'max_values.json')
+        # record_norm_values_fp = os.path.join(self.whole_game_record_dir,
+        #                                      'game_event_splits', 'stats', 'max_values.json')
         self.player_pos_key = '{}_pos'.format(player_pos_source)
         self.player_pos_id_map = json.load(open(getattr(self.args, '{}_id_map_fp'.format(self.player_pos_key),
                                                         '../config/{}_mapping.json'.format(self.player_pos_key))))
@@ -315,16 +316,19 @@ class PlayerFormDataset(Dataset):
             self.items_by_player = []
             self.ab_data_cache = ab_data_cache if ab_data_cache is not None else {}
 
-            splits_to_load = ['train', 'dev', 'test']
+            # splits_to_load = ['train', 'dev', 'test']
+            # print('PlayerFormDataset Loading initial data...')
+            # for split in splits_to_load:
+            #     print('Loading {} split...'.format(split))
+            #     player_split_fp = os.path.join(self.career_data_dir, '{}-splits'.format(self.player_type),
+            #                                    '{}.txt'.format(split))
+            #     player_type_career_data_dir = os.path.join(self.career_data_dir, self.player_type)
+            #     print('\tplayer_split_fp: {}'.format(player_split_fp))
+            #     print('\tplayer_type_career_data_dir: {}'.format(player_type_career_data_dir))
+            #     self.load_initial_data(player_split_fp, player_type_career_data_dir)
             print('PlayerFormDataset Loading initial data...')
-            for split in splits_to_load:
-                print('Loading {} split...'.format(split))
-                player_split_fp = os.path.join(self.career_data_dir, '{}-splits'.format(self.player_type),
-                                               '{}.txt'.format(split))
-                player_type_career_data_dir = os.path.join(self.career_data_dir, self.player_type)
-                print('\tplayer_split_fp: {}'.format(player_split_fp))
-                print('\tplayer_type_career_data_dir: {}'.format(player_type_career_data_dir))
-                self.load_initial_data(player_split_fp, player_type_career_data_dir)
+            player_type_career_data_dir = os.path.join(self.career_data_dir, self.player_type)
+            self.load_initial_data(player_type_career_data_dir)
 
             self.player_items, self.player_item_counts = map(list, zip(*self.items_by_player))
 
@@ -370,17 +374,26 @@ class PlayerFormDataset(Dataset):
 
         return item
 
-    def load_initial_data(self, split_fp, career_data_dir):
-        with open(split_fp, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if not line == '':
-                    player_data_fp = os.path.join(career_data_dir, line)
-                    player_ab_files = read_file_lines(player_data_fp, self.bad_data_fps)
+    def load_initial_data(self, career_data_dir):
+        for player_file in os.listdir(career_data_dir):
+            player_data_fp = os.path.join(career_data_dir, player_file)
+            player_ab_files = read_file_lines(player_data_fp, self.bad_data_fps)
 
-                    if len(player_ab_files) >= self.min_ab_to_be_included_in_dataset:
-                        n_possible_items = max(1, len(player_ab_files) - self.form_ab_window_size + 1)
-                        self.items_by_player.append([player_ab_files, n_possible_items])
+            if len(player_ab_files) >= self.min_ab_to_be_included_in_dataset:
+                n_possible_items = max(1, len(player_ab_files) - self.form_ab_window_size + 1)
+                self.items_by_player.append([player_ab_files, n_possible_items])
+
+    # def load_initial_data(self, split_fp, career_data_dir):
+    #     with open(split_fp, 'r') as f:
+    #         for line in f:
+    #             line = line.strip()
+    #             if not line == '':
+    #                 player_data_fp = os.path.join(career_data_dir, line)
+    #                 player_ab_files = read_file_lines(player_data_fp, self.bad_data_fps)
+    #
+    #                 if len(player_ab_files) >= self.min_ab_to_be_included_in_dataset:
+    #                     n_possible_items = max(1, len(player_ab_files) - self.form_ab_window_size + 1)
+    #                     self.items_by_player.append([player_ab_files, n_possible_items])
 
     def get_raw_item(self):
         """

@@ -10,7 +10,7 @@ Using advances in machine learning to describe how players impact the game in th
 3. Training player _form_ models
 4. Visualizing embeddings
 
-#1. Fetching Data
+# 1. Fetching Data
 
 To fetch data, simply run the `fetch_data.sh` script (i.e. `bash fetch_data.sh`).
 By default, this will collect pitch-by-pitch statcast data for 2015-2019, and seasonal statistics back to 1995.
@@ -26,7 +26,7 @@ season-by-season batting records.
 The workers will periodically print their status, ie how many records have been processed and the current date range
 being processed. Should only take 10-15 minutes on a modern CPU w/ solid-state storage.
 
-#2. Preparing Training Data
+# 2. Preparing Training Data
 
 The first step in creating the training data is to make a single record for each plate appearance in the newly 
 constructed database. To do so, simply run the `construct_at_bat_records.sh` script. If you created the database in a

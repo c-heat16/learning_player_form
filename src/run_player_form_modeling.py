@@ -67,7 +67,7 @@ def read_model_args(fp):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ab_data', default='/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v10',
+    parser.add_argument('--ab_data', default='/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v1',
                         help='Dir where AB data can be found')
     parser.add_argument('--career_data',
                         default='/home/czh/sata1/learning_player_form/player_career_data',
@@ -75,6 +75,8 @@ if __name__ == '__main__':
     parser.add_argument('--whole_game_record_dir',
                         default='/home/czh/sata1/learning_player_form/whole_game_records',
                         help='Where to find player career data')
+    parser.add_argument('--record_norm_values_fp',
+                        default='../config/max_values.json')
 
     parser.add_argument('--out', default='../out/player_form', help='Directory to put output')
     parser.add_argument('--config_dir', default='../config', help='Directory to find config data')
