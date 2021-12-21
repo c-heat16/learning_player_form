@@ -59,5 +59,5 @@ used to train the pitcher model.
 We provide scripts to train both the batter and pitcher _form_ models as presented in our paper. As their names suggest,
 `batter_form_modeling.sh` trains a batter _form_ model and `pitcher_form_modeling.sh` trains a pitcher _form_ model. The
 batter model will take a litte more than 3 days to train (~80 hours) while the pitcher model will take about 2.5 days to
-train (~58 hours) using A6000 GPU's. We also provide the trained model weights in the `pretrained_models` directory in
+train (~58 hours) using A6000 GPU's. We also provide the trained model weights in the [`pretrained_models`](pretrained_models) directory in
 the repo.
