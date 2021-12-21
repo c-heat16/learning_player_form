@@ -1,5 +1,5 @@
 # learning_player_form
-Using advances in machine learning to describe how players impact the game in the MLB
+Using advances in machine learning to describe how players impact the game in the MLB.
 
 **Before proceeding, please install all packages listed in requirements.txt**
 
@@ -30,10 +30,16 @@ The first step in creating the training data is to make a single record for each
 constructed database. To do so, simply run the `construct_at_bat_records.sh` script. If you created the database in a
 location other than `database/mlb.db` (i.e. you changed `DB_FP` in the `fetch_data.sh` script), please update that for
 this script as well. By default, running the script will create a `data/` directory in the repo, and the individual
-at-bat records will be placed in the `data/ab_seqs/ab_seqs_v1/` directory, grouped by season.
+at-bat records will be placed in the `data/ab_seqs/ab_seqs_v1/` directory, grouped by season. The output location can be
+adjusted by modifying the `AB_OUT_DIR` variable in the script.
 
 In a system with a modern CPU and solid-state storage, it will take roughly 4.5 seconds to construct the at-bats for an
 individual game. By default, the script will try to utilize 4 threads to construct the records. This can be adjusted
 by changing the value of the `N_WORKERS` variable in the `construct_at_bat_records.sh` script. When 16 threads are used,
 it will take roughly 1 hours for the script to complete processing. Records for each season will take up about 10.5 GB,
 so for all five seasons, so ~55 GB of free space is required.
+
+Once the at-bat records are constructed, the script will begin to aggregate at-bat records by player in chronological
+order. First pitchers, then batters. This should only take about a minute or less. By default, the script will create a
+`data/player_career_data` directory in the repo and place the output within. If you wish to change the location of the
+output, simply change the `CAREER_OUT_DIR` variable in the script.

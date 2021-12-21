@@ -2,6 +2,7 @@ tqdm
 numpy
 torch
 pandas
+sklearn
 pybaseball
 transformers
 tensorboard
