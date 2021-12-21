@@ -11,6 +11,7 @@ Using advances in machine learning to describe how players impact the game in th
 4. Visualizing embeddings
 
 #1. Fetching Data
+
 To fetch data, simply run the `fetch_data.sh` script (i.e. `bash fetch_data.sh`).
 By default, this will collect pitch-by-pitch statcast data for 2015-2019, and seasonal statistics back to 1995.
 The script will create a `database` directory and create a database file at `database/mlb.db`. To change where the
@@ -26,6 +27,7 @@ The workers will periodically print their status, ie how many records have been 
 being processed. Should only take 10-15 minutes on a modern CPU w/ solid-state storage.
 
 #2. Preparing Training Data
+
 The first step in creating the training data is to make a single record for each plate appearance in the newly 
 constructed database. To do so, simply run the `construct_at_bat_records.sh` script. If you created the database in a
 location other than `database/mlb.db` (i.e. you changed `DB_FP` in the `fetch_data.sh` script), please update that for
