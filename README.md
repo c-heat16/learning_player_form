@@ -16,7 +16,7 @@ To fetch data, simply run the `fetch_data.sh` script (i.e. `bash fetch_data.sh`)
 By default, this will collect pitch-by-pitch statcast data for 2015-2019, and seasonal statistics back to 1995.
 The script will create a `database` directory and create a database file at `database/mlb.db`. To change where the
 database is placed, change the `DB_FP` variable in the `fetch_data.sh` script to the desired location. If you change the
-location of the database, please make note if it as you will need it later.
+location of the database, please make note of it as you will need it later.
 
 The script utilized two custom "worker" classes, a PyBaseball worker and a SQLWorker.
 The PyBaseball workers fetch data via the [PyBaseball](https://github.com/jldbc/pybaseball) library and then pass it to 
