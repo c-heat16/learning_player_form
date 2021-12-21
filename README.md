@@ -45,3 +45,19 @@ Once the at-bat records are constructed, the script will begin to aggregate at-b
 order. First pitchers, then batters. This should only take about a minute or less. By default, the script will create a
 `data/player_career_data` directory in the repo and place the output within. If you wish to change the location of the
 output, simply change the `CAREER_OUT_DIR` variable in the script.
+
+# 3. Training Player _Form_ Models
+**NOTE:** Before proceeding with this step, please unsure you have a CUDA capable GPU and CUDA installed on the machine
+you intend to run the models on. Additional information to this end can be found 
+[here](https://pytorch.org/get-started/locally/). While you can _technically_ run these models on a
+CPU, it would be painfully slow.
+
+**NOTE:** GPUs with a minimum **32 GB** of RAM are required to *train* the batter and pitcher models referenced in our
+corresponding paper (defaults in training scripts). One GPU was used to train the batter model, while two GPUs were 
+used to train the pitcher model.
+
+We provide scripts to train both the batter and pitcher _form_ models as presented in our paper. As their names suggest,
+`batter_form_modeling.sh` trains a batter _form_ model and `pitcher_form_modeling.sh` trains a pitcher _form_ model. The
+batter model will take a litte more than 3 days to train (~80 hours) while the pitcher model will take about 2.5 days to
+train (~58 hours) using A6000 GPU's. We also provide the trained model weights in the `pretrained_models` directory in
+the repo.

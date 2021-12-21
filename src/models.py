@@ -236,8 +236,8 @@ class PlayerFormModel(nn.Module):
         self.transformer = nn.TransformerEncoder(encoder_layer, self.n_transformer_layers, norm=transformer_layernorm)
 
         self.dropout = nn.Dropout(self.general_dropout_prob)
-        if self.gs_token_predict_pct > 0 or self.token_mask_pct:
-            self.gamestate_clf_head = nn.Linear(self.complete_embd_dim, self.n_gamestate_tokens)
+        # if self.gs_token_predict_pct > 0 or self.token_mask_pct:
+        self.gamestate_clf_head = nn.Linear(self.complete_embd_dim, self.n_gamestate_tokens)
 
         self.n_proj_layers = getattr(self.args, 'n_proj_layers', 2)
         self.proj_head = RawDataProjectionModule(
@@ -435,6 +435,21 @@ class PlayerFormModel(nn.Module):
             to_return = (cls_embds, (gamestate_logits, gamestate_labels))
 
         return to_return
+
+    @staticmethod
+    def select_gamestate_embeddings_for_prediction(seq, labels, mask_idxs):
+        pred_embeddings = []
+        pred_labels = []
+
+        for batch_idx, batch_mask_idxs in enumerate(mask_idxs):
+            for bmi in batch_mask_idxs:
+                pred_embeddings.append(seq[batch_idx, bmi].unsqueeze(0))
+                pred_labels.append(labels[batch_idx, bmi].unsqueeze(0))
+
+        pred_embeddings = torch.cat(pred_embeddings, dim=0)
+        pred_labels = torch.cat(pred_labels, dim=0)
+
+        return pred_embeddings, pred_labels
 
     def mask_input_sequence(self, input_seq, ab_lengths):
         """

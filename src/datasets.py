@@ -286,8 +286,6 @@ class PlayerFormDataset(Dataset):
 
         self.career_data_dir = getattr(self.args, 'career_data',
                                        '/home/czh/sata1/learning_player_form/player_career_data')
-        # self.whole_game_record_dir = getattr(self.args, 'whole_game_record_dir',
-        #                                      '/home/czh/sata1/learning_player_form/whole_game_records')
         self.parse_plate_pos_to_id = getattr(self.args, 'parse_plate_pos_to_id', False)
 
         pitch_type_config_fp = getattr(self.args, 'pitch_type_config_fp', '../config/pitch_type_id_mapping.json')
@@ -297,8 +295,6 @@ class PlayerFormDataset(Dataset):
         player_pos_source = getattr(self.args, 'player_pos_source', 'mlb')
         record_norm_values_fp = getattr(self.args, 'record_norm_values_fp', '../config/max_values.json')
 
-        # record_norm_values_fp = os.path.join(self.whole_game_record_dir,
-        #                                      'game_event_splits', 'stats', 'max_values.json')
         self.player_pos_key = '{}_pos'.format(player_pos_source)
         self.player_pos_id_map = json.load(open(getattr(self.args, '{}_id_map_fp'.format(self.player_pos_key),
                                                         '../config/{}_mapping.json'.format(self.player_pos_key))))
@@ -382,18 +378,6 @@ class PlayerFormDataset(Dataset):
             if len(player_ab_files) >= self.min_ab_to_be_included_in_dataset:
                 n_possible_items = max(1, len(player_ab_files) - self.form_ab_window_size + 1)
                 self.items_by_player.append([player_ab_files, n_possible_items])
-
-    # def load_initial_data(self, split_fp, career_data_dir):
-    #     with open(split_fp, 'r') as f:
-    #         for line in f:
-    #             line = line.strip()
-    #             if not line == '':
-    #                 player_data_fp = os.path.join(career_data_dir, line)
-    #                 player_ab_files = read_file_lines(player_data_fp, self.bad_data_fps)
-    #
-    #                 if len(player_ab_files) >= self.min_ab_to_be_included_in_dataset:
-    #                     n_possible_items = max(1, len(player_ab_files) - self.form_ab_window_size + 1)
-    #                     self.items_by_player.append([player_ab_files, n_possible_items])
 
     def get_raw_item(self):
         """
@@ -567,6 +551,54 @@ class PlayerFormDataset(Dataset):
         player_data['batter_handedness_ids'] = torch.tensor([], dtype=torch.long) if player_data.get('batter_handedness_ids', None) is None else player_data.get('batter_handedness_ids', [])
 
         player_data = self.finalize_player_data(player_data)
+        return player_data
+
+    def finalize_player_data(self, player_data):
+        pad_to_window_size = ['ab_lengths', 'game_pk', 'game_year']
+
+        seq_n_pad = None
+
+        for k in player_data.keys():
+            v = player_data[k]
+            if type(v) == torch.Tensor:
+                if k in pad_to_window_size:
+                    n_pad = self.form_ab_window_size - v.shape[0]
+                    v_pad = torch.zeros(n_pad, dtype=v.dtype)
+                    v = torch.cat([v, v_pad], dim=0)
+                else:
+                    if v.shape[0] > self.max_seq_len:
+                        v = v[-self.max_seq_len:]
+                    elif v.shape[0] < self.max_seq_len:
+                        n_pad = self.max_seq_len - v.shape[0]
+
+                        if seq_n_pad is None:
+                            seq_n_pad = n_pad
+
+                        if len(v.shape) == 1:
+                            v_pad = torch.zeros(n_pad, dtype=v.dtype)
+                        else:
+                            v_pad = torch.zeros(n_pad, v.shape[1], dtype=v.dtype)
+
+                        v = torch.cat([v, v_pad], dim=0)
+                player_data[k] = v
+
+        if seq_n_pad is None:
+            my_pad_mask = torch.ones(self.max_seq_len, dtype=torch.float)
+            model_pad_mask = torch.zeros(self.max_seq_len, dtype=torch.bool)
+            mem_mask = torch.zeros(self.max_seq_len, self.max_seq_len, dtype=torch.long)
+        else:
+            n_present = self.max_seq_len - seq_n_pad
+            my_pad_mask = torch.cat([torch.ones(n_present, dtype=torch.float),
+                                     torch.zeros(seq_n_pad, dtype=torch.float)], dim=0)
+            model_pad_mask = torch.cat([torch.zeros(n_present, dtype=torch.bool),
+                                        torch.ones(seq_n_pad, dtype=torch.bool)], dim=0)
+            mem_mask = torch.cat([torch.zeros(self.max_seq_len, n_present, dtype=torch.long),
+                                  torch.ones(self.max_seq_len, seq_n_pad, dtype=torch.long)], dim=1)
+
+        player_data['my_src_pad_mask'] = my_pad_mask
+        player_data['model_src_pad_mask'] = model_pad_mask
+        player_data['memory_mask'] = mem_mask
+
         return player_data
 
     def parse_item_fp(self, item_fp):
