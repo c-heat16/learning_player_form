@@ -1,6 +1,6 @@
 __author__ = 'Connor Heaton'
 
-
+import os.path
 import time
 import sqlite3
 import argparse
@@ -100,12 +100,10 @@ def construct_at_bat_sequences(args):
             for worker_q in worker_qs:
                 if worker_q.empty():
                     worker_q.put(game_pk)
-                    if int(game_pk) == 570334:
-                        print('****** PUSHED GAME PK {} TO Q ******'.format(game_pk))
                     pushed_to_q = True
                     break
             if not pushed_to_q:
-                time.sleep(2)
+                time.sleep(0.1)
 
         if game_pk_idx % summary_every == 0:
             print('Orchestrator pushed {0} of {1} game pks ({2:.2f}%) to q...'.format(game_pk_idx,
@@ -137,25 +135,28 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--start_year', default=2015, type=int)
     parser.add_argument('--end_year', default=2019, type=int)
-    parser.add_argument('--out', default='/home/czh/sata1/SportsAnalytics/ab_seqs/ab_seqs_v10')
+    parser.add_argument('--out', default='/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v1')
     parser.add_argument('--db_fp', default='../database/mlb.db')
     parser.add_argument('--reverse_pk_order', default=False, type=str2bool)
 
     parser.add_argument('--games_table', default='statcast')
-    parser.add_argument('--games_col_names_fp', default='../data/misc/statcast_column_names.txt')
+    parser.add_argument('--games_col_names_fp', default='../config/statcast_column_names.txt')
     parser.add_argument('--statcast_id_to_bio_info_fp', default='../config/statcast_id_to_bio_info.json')
 
     parser.add_argument('--pitching_by_season_table', default='pitching_by_season')
-    parser.add_argument('--pitching_by_season_col_names_fp', default='../data/misc/pitching_stats_column_names_fmt.txt')
+    parser.add_argument('--pitching_by_season_col_names_fp', default='../config/pitching_stats_column_names_fmt.txt')
 
     parser.add_argument('--batting_by_season_table', default='batting_by_season')
-    parser.add_argument('--batting_by_season_col_names_fp', default='../data/misc/batting_stats_column_names_fmt.txt')
+    parser.add_argument('--batting_by_season_col_names_fp', default='../config/batting_stats_column_names_fmt.txt')
 
     parser.add_argument('--summary_every_n_games_constructor', default=20, type=int)
     parser.add_argument('--summary_every_n_games_writer', default=20, type=int)
     parser.add_argument('--n_workers', default=4, type=int)
     parser.add_argument('--term_item', default='<END>')
     args = parser.parse_args()
+
+    if not os.path.exists(args.out):
+        os.makedirs(args.out)
 
     game_attrs = read_attrs_from_file(args.games_col_names_fp)
     pitching_by_season_attrs = read_attrs_from_file(args.pitching_by_season_col_names_fp)

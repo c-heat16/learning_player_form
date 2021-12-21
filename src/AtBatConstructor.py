@@ -150,10 +150,10 @@ class AtBatConstructor(object):
                     self.out_q.put(self.term_item)
                     break
                 else:
-                    if int(game_pk) == 570334:
-                        print('****** [{0}] Worker {1} rcvd game pk 570334 ******'.format(
-                            datetime.now().strftime("%H:%M:%S"),
-                            self.idx))
+                    # if int(game_pk) == 570334:
+                    #     print('****** [{0}] Worker {1} rcvd game pk 570334 ******'.format(
+                    #         datetime.now().strftime("%H:%M:%S"),
+                    #         self.idx))
 
                     game_at_bats = self.construct_single_game_at_bats(game_pk)
                     n_games += 1
