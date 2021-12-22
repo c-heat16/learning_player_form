@@ -15,9 +15,10 @@ below. A more complete set of embedding visualizations can be found [here](figur
 ![Example pitcher form embeddings](figures/succinct_pitcher_form_plots.png)
 
 
+# Implementing Pipeline
+
 **Before proceeding, please install all packages listed in requirements.txt**
 
-# Implementing Pipeline
 1. Fetching data
 2. Preparing training data
 3. Training player _form_ models
