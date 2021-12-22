@@ -1,8 +1,16 @@
-# learning_player_form
-Using advances in machine learning to describe how players impact the game in the MLB.
+# Learning to Describe How Players Impact the Game in the MLB
+This repository contains the elements necessary to describe how players in the MLB impact the game over the short term,
+what we colloquially refer to as their _form_. The steps described below will guide you through the process from start
+to finish - collecting the data, training the model, and visualizing player embeddings. Examples of the embedding
+visualizations are given below.
+
+# Example Batter Embeddings
+Below is an example of embeddings that were obtained from a batter _form_ model trained following the process described 
+below. A more complete set of embedding visualizations can be found [here](figures/batter_form_plots.png).
+![Example batter form embeddings](figures/succinct_batter_form_plots.png)
+
 
 **Before proceeding, please install all packages listed in requirements.txt**
-
 
 # Implementing Pipeline
 1. Fetching data
@@ -85,7 +93,7 @@ checkpoint instead.
 
 When using the script as provided (`--n_workers -1`), the script will use 10 threads to build the input data for 
 batters and 3 threads for pitchers. With these parameters, it will take ~15 minutes to process one season of batters
-and ~8 minutes for a season on pitchers. If you wish to use a different number of threads, change `--n_workers` to the 
+and ~7 minutes for a season on pitchers. If you wish to use a different number of threads, change `--n_workers` to the 
 desired value.
 
 
