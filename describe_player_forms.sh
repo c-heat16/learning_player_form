@@ -22,6 +22,6 @@ echo "***************************"
 
 python3 describe_player_forms.py --ab_data "$AB_OUT_DIR" --career_data "$CAREER_OUT_DIR" \
                                  --whole_game_record_dir "$WHOLE_GAME_OUT_DIR" \
-                                 --model_ckpt "$PITCHER_MODEL_FP" --out "$FORM_OUT_DIR" \
+                                 --model_ckpt "$BATTER_MODEL_FP" --out "$FORM_OUT_DIR" \
                                  --start_year 2015 --end_year 2019 \
                                  --n_workers -1 --out_dir_tmplt "{}_form_v1"
