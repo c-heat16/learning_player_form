@@ -9,6 +9,11 @@ Below is an example of embeddings that were obtained from a batter _form_ model 
 below. A more complete set of embedding visualizations can be found [here](figures/batter_form_plots.png).
 ![Example batter form embeddings](figures/succinct_batter_form_plots.png)
 
+# Example Pitcher Embeddings
+Below is an example of embeddings that were obtained from a pitcher _form_ model trained following the process described 
+below. A more complete set of embedding visualizations can be found [here](figures/pitcher_form_plots.png).
+![Example pitcher form embeddings](figures/succinct_pitcher_form_plots.png)
+
 
 **Before proceeding, please install all packages listed in requirements.txt**
 
