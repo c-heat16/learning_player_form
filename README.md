@@ -26,6 +26,7 @@ below. A more complete set of embedding visualizations can be found [here](figur
 5. Visualizing embeddings
 
 # 1. Fetching Data
+**Estimated duration:** 10-15 minutes
 
 To fetch data, simply run the [`fetch_data.sh`](fetch_data.sh) script (i.e. `bash fetch_data.sh`).
 By default, this will collect pitch-by-pitch statcast data for 2015-2019, and seasonal statistics back to 1995.
@@ -42,6 +43,7 @@ The workers will periodically print their status, ie how many records have been 
 being processed. Should only take 10-15 minutes on a modern CPU w/ solid-state storage.
 
 # 2. Preparing Training Data
+**Estimated duration:** 65 minutes
 
 The first step in creating the training data is to make a single record for each plate appearance in the newly 
 constructed database. To do so, simply run the [`construct_at_bat_records.sh`](construct_at_bat_records.sh) script. 
@@ -53,7 +55,7 @@ season. The output location can be adjusted by modifying the `AB_OUT_DIR` variab
 In a system with a modern CPU and solid-state storage, it will take roughly 4.5 seconds to construct the at-bats for an
 individual game. By default, the script will try to utilize 4 threads to construct the records. This can be adjusted
 by changing the value of the `N_WORKERS` variable in the `construct_at_bat_records.sh` script. When 16 threads are used,
-it will take roughly 1 hours for the script to complete processing. Records for each season will take up about 10.5 GB,
+it will take roughly 1 hour for the script to complete processing. Records for each season will take up about 10.5 GB,
 so for all five seasons, so ~55 GB of free space is required.
 
 Once the at-bat records are constructed, the script will begin to aggregate at-bat records by player in chronological
@@ -76,6 +78,8 @@ an egregious amount of time to complete.
 corresponding paper (defaults in training scripts). One GPU was used to train the batter model, while two GPUs were 
 used to train the pitcher model.
 
+**Estimated duration:** 2.5 days (pitchers), 3 days (batters)
+
 We provide scripts to train both the batter and pitcher _form_ models as presented in our paper. As their names suggest,
 [`batter_form_modeling.sh`](batter_form_modeling.sh) trains a batter _form_ model and 
 [`pitcher_form_modeling.sh`](pitcher_form_modeling.sh) trains a pitcher _form_ model. The batter model will take a 
@@ -84,6 +88,8 @@ A6000 GPU's. We also provide the trained model weights in the [`pretrained_model
 repo.
 
 # 4. Describing Player _Form_
+**Estimated duration:** 25 minutes (pitchers), 60 minutes (batters)
+
 The [`describe_player_forms.sh`](describe_player_forms.sh) script is provided for you to describe the form of players in
 the starting lineup for games from 2015-2019. Please remember to update the `FORM_OUT_DIR`, `AB_OUT_DIR`, 
 `CAREER_OUT_DIR`, and `WHOLE_GAME_OUT_DIR` variables in the script if you have changed them in any of the previous 
@@ -98,26 +104,6 @@ checkpoint instead.
 `model_time_id/args.txt`.
 
 When using the script as provided (`--n_workers -1`), the script will use 10 threads to build the input data for 
-batters and 3 threads for pitchers. With these parameters, it will take ~15 minutes to process one season of batters
-and ~7 minutes for a season on pitchers. If you wish to use a different number of threads, change `--n_workers` to the 
+batters and 3 threads for pitchers. With these parameters, it will take ~12 minutes to process one season of batters
+and ~5 minutes for a season on pitchers. If you wish to use a different number of threads, change `--n_workers` to the 
 desired value.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
