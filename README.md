@@ -69,16 +69,16 @@ be placed in the `data/whole_game_records/by_season` directory in the repo. This
 minutes.
 
 # 3. Training Player _Form_ Models
+**Estimated duration:** 2.5 days (pitchers), 3 days (batters)
+
 **NOTE:** Before proceeding with this step, please unsure you have a CUDA capable GPU and CUDA installed on the machine
-you intend to run the models on. Additional information to this end can be found 
+you intend to run the models on. Additional information to this end can be found
 [here](https://pytorch.org/get-started/locally/). While you can _technically_ train these models on a CPU, it would take
 an egregious amount of time to complete.
 
 **NOTE:** GPUs with a minimum **32 GB** of RAM are required to *train* the batter and pitcher models referenced in our
-corresponding paper (defaults in training scripts). One GPU was used to train the batter model, while two GPUs were 
+corresponding paper (defaults in training scripts). One GPU was used to train the batter model, while two GPUs were
 used to train the pitcher model.
-
-**Estimated duration:** 2.5 days (pitchers), 3 days (batters)
 
 We provide scripts to train both the batter and pitcher _form_ models as presented in our paper. As their names suggest,
 [`batter_form_modeling.sh`](batter_form_modeling.sh) trains a batter _form_ model and 
