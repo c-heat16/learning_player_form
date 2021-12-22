@@ -76,7 +76,7 @@ you intend to run the models on. Additional information to this end can be found
 [here](https://pytorch.org/get-started/locally/). While you can _technically_ train these models on a CPU, it would take
 an egregious amount of time to complete.
 
-**NOTE:** GPUs with a minimum **32 GB** of RAM are required to *train* the batter and pitcher models referenced in our
+**NOTE:** GPUs with a minimum **32 GB** of RAM are required to _train_ the batter and pitcher models referenced in our
 corresponding paper (defaults in training scripts). One GPU was used to train the batter model, while two GPUs were
 used to train the pitcher model.
 
@@ -107,3 +107,5 @@ When using the script as provided (`--n_workers -1`), the script will use 10 thr
 batters and 3 threads for pitchers. With these parameters, it will take ~12 minutes to process one season of batters
 and ~5 minutes for a season on pitchers. If you wish to use a different number of threads, change `--n_workers` to the 
 desired value.
+
+# 5. Visualizing Embeddings
