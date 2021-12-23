@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#export FORM_OUT_DIR="$PWD/data/"
+#export FORM_OUT_DIR="$PWD/out/forms"
 #export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
 #export CAREER_OUT_DIR="$PWD/data/player_career_data"
 #export WHOLE_GAME_OUT_DIR="$PWD/data/whole_game_records"

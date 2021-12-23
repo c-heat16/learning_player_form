@@ -17,24 +17,6 @@ region of all-star players. When looking to breaking ball usage, however, we see
 based visualizations, but a clear grouping of pitchers who throw a large portion of breaking balls in the _form-_ based
 visualizations.
 
-
-[comment]: <> (# Example Batter Embeddings)
-
-[comment]: <> (Below is an example of embeddings that were obtained from a batter _form_ model trained following the process described )
-
-[comment]: <> (below. A more complete set of embedding visualizations can be found [here]&#40;figures/batter_form_plots.png&#41;.)
-
-[comment]: <> (![Example batter form embeddings]&#40;figures/succinct_batter_form_plots.png&#41;)
-
-[comment]: <> (# Example Pitcher Embeddings)
-
-[comment]: <> (Below is an example of embeddings that were obtained from a pitcher _form_ model trained following the process described )
-
-[comment]: <> (below. A more complete set of embedding visualizations can be found [here]&#40;figures/pitcher_form_plots.png&#41;.)
-
-[comment]: <> (![Example pitcher form embeddings]&#40;figures/succinct_pitcher_form_plots.png&#41;)
-
-
 # Implementing Pipeline
 
 **Before proceeding, please install all packages listed in requirements.txt**
@@ -129,3 +111,21 @@ and ~5 minutes for a season on pitchers. If you wish to use a different number o
 desired value.
 
 # 5. Visualizing Embeddings
+**Estimated duration:** <5 minutes
+
+We present the `visualize_form_embeddings.sh` script to visualize the embeddings that were created in step 4. Before
+actually creating the plots, the script will compute the statistics that will accompany the visualizations (WAR,
+batting average, ERA, salary, etc). The script will create a `bin/` directory in the given `--form_rep_dir` and save
+intermediate data there so it does not need to be computed every time. The initial construction of this data should only
+take a minute or two, and the actual plotting should also only take a minute or two.
+
+tSNE is used to project the _form_ embeddings from their 64-dimensions vector to a 2-D vector. tSNE is a stochastic
+(**random**) process, so the results will not be the same each time the points are projected. To ensure reproducible plots,
+the tSNE projections are saved in the `bin/` folder. Delete this file to create new projections. A small example of the
+embedding visualizations for batters and starting pitchers is given below. A more complete set of batter visualizations 
+can be found [here](figures/batter_form_plots.png) and pitcher visualizations [here](figures/pitcher_form_plots.png).
+
+![Example batter form embeddings](figures/succinct_batter_form_plots.png)
+
+![Example pitcher form embeddings](figures/succinct_pitcher_form_plots.png)
+

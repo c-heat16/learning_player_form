@@ -1,0 +1,12 @@
+{
+  "571448": {"name": "Nolan Arenado", "seasons": [2015, 2016], "league": "NL"},
+  "518626": {"name": "Josh Donaldson", "seasons": [2015], "league": "AL"},
+  "429665": {"name": "Edwin Encarnacion", "seasons": [2016], "league": "AL"},
+  "120074": {"name": "David Ortiz", "seasons": [2016], "league": "AL"},
+  "519317": {"name": "Giancarlo Stanton", "seasons": [2017], "league": "NL"},
+  "443558": {"name": "Nelson Cruz", "seasons": [2017], "league": "AL"},
+  "595879": {"name": "Javier Baez", "seasons": [2018], "league": "NL"},
+  "502110": {"name": "J.D. Martinez", "seasons": [2018], "league": "AL"},
+  "543685": {"name": "Anthony Rendon", "seasons": [2019], "league": "NL"},
+  "547989": {"name": "Jose Abreu", "seasons": [2019], "league": "AL"}
+}

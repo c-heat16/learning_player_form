@@ -1,0 +1,10 @@
+{
+  "543829": {"name": "Dee Strange-Gordon", "seasons": [2015], "league": "NL"},
+  "408234": {"name": "Miguel Cabrera", "seasons": [2015], "league": "AL"},
+  "518934": {"name": "DJ LeMahieu", "seasons": [2016], "league": "NL"},
+  "514888": {"name": "Jose Altuve", "seasons": [2016, 2017], "league": "AL"},
+  "453568": {"name": "Charlie Blackmon", "seasons": [2017], "league": "NL"},
+  "592885": {"name": "Christian Yelich", "seasons": [2018, 2019], "league": "NL"},
+  "605141": {"name": "Mookie Betts", "seasons": [2018], "league": "AL"},
+  "641313": {"name": "Tim Anderson", "seasons": [2019], "league": "AL"}
+}
