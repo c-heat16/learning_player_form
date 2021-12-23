@@ -1,9 +1,9 @@
 # Learning to Describe How Players Impact the Game in the MLB
 This repository contains the elements necessary to describe how players in the MLB impact the game over the short term,
 which we colloquially refer to as their _form_. Concretely, player _form_ is described by a numerical vector derived 
-from the sequence of in-game events the player participated in. The steps described below will guide you through the 
-process from start to finish - collecting the data, training the model, describing player _form_, and visualizing the
-produced _form_ embeddings. We present a small comparison of _form-_ vs _statistic-_ based embedding visualizations 
+from the sequence of in-game events in which the player participated. The steps described below will guide you through
+the process from start to finish - collecting the data, training the model, describing player _form_, and visualizing 
+the produced _form_ embeddings. We present a small comparison of _form-_ vs _statistic-_ based embedding visualizations 
 below. A more complete set of batter visualizations can be found [here](figures/batter_form_plots.png) and pitcher
 visualizations [here](figures/pitcher_form_plots.png).
 
