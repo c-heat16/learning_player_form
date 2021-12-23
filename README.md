@@ -7,15 +7,16 @@ produced _form_ embeddings. We present a small comparison of _form-_ vs _statist
 below. A more complete set of batter visualizations can be found [here](figures/batter_form_plots.png) and pitcher
 visualizations [here](figures/pitcher_form_plots.png).
 
-In general, we find that both _form-_ and _statistic-_ based embeddings do a good job of differentiating the "good" 
+![Embedding comparison](figures/stat_vs_form_comp.png)
+
+In general, we find that both _form-_ and _statistic-_ based embeddings do a good job of differentiating the "good"
 players form the "bad" ones, but that the _form-_ based embeddings are better suited for highlighting the manner in
-which the "good" players impact the game. For a succinct example of this, we look to the starting pitcher 
+which the "good" players impact the game. For a succinct example of this, we look to the starting pitcher
 visualizations. We see that both the _form-_ and _statistic-_ based embedding visualizations seem to generally induce a
 region of all-star players. When looking to breaking ball usage, however, we see no association in the _statistic-_
 based visualizations, but a clear grouping of pitchers who throw a large portion of breaking balls in the _form-_ based
 visualizations.
 
-![Embedding comparison](figures/stat_vs_form_comp.png)
 
 [comment]: <> (# Example Batter Embeddings)
 
