@@ -1,18 +1,37 @@
 # Learning to Describe How Players Impact the Game in the MLB
 This repository contains the elements necessary to describe how players in the MLB impact the game over the short term,
-what we colloquially refer to as their _form_. The steps described below will guide you through the process from start
-to finish - collecting the data, training the model, and visualizing player embeddings. Examples of the embedding
-visualizations are given below.
+which we colloquially refer to as their _form_. Concretely, player _form_ is described by a numerical vector derived 
+from the sequence of in-game events the player participated in. The steps described below will guide you through the 
+process from start to finish - collecting the data, training the model, describing player _form_, and visualizing the
+produced _form_ embeddings. We present a small comparison of _form-_ vs _statistic-_ based embedding visualizations 
+below. A more complete set of batter visualizations can be found [here](figures/batter_form_plots.png) and pitcher
+visualizations [here](figures/pitcher_form_plots.png).
 
-# Example Batter Embeddings
-Below is an example of embeddings that were obtained from a batter _form_ model trained following the process described 
-below. A more complete set of embedding visualizations can be found [here](figures/batter_form_plots.png).
-![Example batter form embeddings](figures/succinct_batter_form_plots.png)
+In general, we find that both _form-_ and _statistic-_ based embeddings do a good job of differentiating the "good" 
+players form the "bad" ones, but that the _form-_ based embeddings are better suited for highlighting the manner in
+which the "good" players impact the game. For a succinct example of this, we look to the starting pitcher 
+visualizations. We see that both the _form-_ and _statistic-_ based embedding visualizations seem to generally induce a
+region of all-star players. When looking to breaking ball usage, however, we see no association in the _statistic-_
+based visualizations, but a clear grouping of pitchers who throw a large portion of breaking balls in the _form-_ based
+visualizations.
 
-# Example Pitcher Embeddings
-Below is an example of embeddings that were obtained from a pitcher _form_ model trained following the process described 
-below. A more complete set of embedding visualizations can be found [here](figures/pitcher_form_plots.png).
-![Example pitcher form embeddings](figures/succinct_pitcher_form_plots.png)
+![Embedding comparison](figures/stat_vs_form_comp.png)
+
+[comment]: <> (# Example Batter Embeddings)
+
+[comment]: <> (Below is an example of embeddings that were obtained from a batter _form_ model trained following the process described )
+
+[comment]: <> (below. A more complete set of embedding visualizations can be found [here]&#40;figures/batter_form_plots.png&#41;.)
+
+[comment]: <> (![Example batter form embeddings]&#40;figures/succinct_batter_form_plots.png&#41;)
+
+[comment]: <> (# Example Pitcher Embeddings)
+
+[comment]: <> (Below is an example of embeddings that were obtained from a pitcher _form_ model trained following the process described )
+
+[comment]: <> (below. A more complete set of embedding visualizations can be found [here]&#40;figures/pitcher_form_plots.png&#41;.)
+
+[comment]: <> (![Example pitcher form embeddings]&#40;figures/succinct_pitcher_form_plots.png&#41;)
 
 
 # Implementing Pipeline
