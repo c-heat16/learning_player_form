@@ -1,11 +1,12 @@
 #!/bin/bash
 
-#export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
-#export CAREER_OUT_DIR="$PWD/data/player_career_data"
-#export WHOLE_GAME_OUT_DIR="$PWD/data/whole_game_records/by_season"
-export AB_OUT_DIR="/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v1"
-export CAREER_OUT_DIR="/home/czh/sata1/learning_player_form/player_career_data"
-export WHOLE_GAME_OUT_DIR="/home/czh/sata1/learning_player_form/whole_game_records/by_season"
+export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
+export CAREER_OUT_DIR="$PWD/data/player_career_data"
+export WHOLE_GAME_OUT_DIR="$PWD/data/whole_game_records/by_season"
+
+#export AB_OUT_DIR="/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v1"
+#export CAREER_OUT_DIR="/home/czh/sata1/learning_player_form/player_career_data"
+#export WHOLE_GAME_OUT_DIR="/home/czh/sata1/learning_player_form/whole_game_records/by_season"
 
 export DB_FP="$PWD/database/mlb.db"
 export N_WORKERS=16

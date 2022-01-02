@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DB_FP="../database/mlb.db"
+export DB_FP="$PWD/database/mlb.db"
 
 # move to source dir
 cd src

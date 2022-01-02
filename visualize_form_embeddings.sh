@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#export FORM_DIR="$PWD/out/forms/batter_form_v1"
-#export WHOLE_GAME_DIR="$PWD/data/whole_game_records"
+export FORM_DIR="$PWD/out/forms/batter_form_v1"
+export WHOLE_GAME_DIR="$PWD/data/whole_game_records"
 
-export FORM_DIR="/home/czh/sata1/learning_player_form/forms/batter_form_v1"
-export WHOLE_GAME_DIR="/home/czh/sata1/learning_player_form/whole_game_records/by_season"
+#export FORM_DIR="/home/czh/sata1/learning_player_form/forms/batter_form_v1"
+#export WHOLE_GAME_DIR="/home/czh/sata1/learning_player_form/whole_game_records/by_season"
 
 export DB_FP="$PWD/database/mlb.db"
 

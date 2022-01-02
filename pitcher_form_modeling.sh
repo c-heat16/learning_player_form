@@ -2,10 +2,10 @@
 
 export CUDA_VISIBLE_DEVICES=0,1
 
-#export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
-#export CAREER_OUT_DIR="$PWD/data/player_career_data"
-export AB_OUT_DIR="/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v1"
-export CAREER_OUT_DIR="/home/czh/sata1/learning_player_form/player_career_data"
+export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
+export CAREER_OUT_DIR="$PWD/data/player_career_data"
+#export AB_OUT_DIR="/home/czh/sata1/learning_player_form/ab_seqs/ab_seqs_v1"
+#export CAREER_OUT_DIR="/home/czh/sata1/learning_player_form/player_career_data"
 
 cd src/
 

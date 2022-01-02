@@ -27,10 +27,24 @@ visualizations.
 4. Describing player _form_
 5. Visualizing embeddings
 
+**Note:** While we provide the code to construct a local database and use it to create at-bat records to train the 
+models below, the constructed database and at-bat records can be found [here](https://pennstateoffice365-my.sharepoint.com/:f:/g/personal/czh5372_psu_edu/Eujd0Rhrf5dKgOyJgKyy8T8BS5lsZqEeecSoXTYXleXCIQ?e=CPOfRg).
+The at-bat records are grouped by season and compressed (i.e. `201*.tar.gz`). To extract the data for 2015, for example,
+execute `tar -xzf 2015.tar.gz` command. The database can found in the `mlb.db.tar.gz` file and extracted using the
+`tar -xzf mlb.db.tar.gz` command.
+
+To use the pre-constructed database, create a `database/` directory at the root-level of the repo and place the 
+decompressed `mlb.db` database in that directory. If using the pre-constructed database, step 1 below can be skipped.
+
+To use the pre-constructed at-bat records, create a `data/ab_seqs/ab_seqs_v1` directory at the root-level of the repo
+and place the decompressed at-bat records grouped by season in that directory. That is, `data/ab_seqs/ab_seqs_v1` should
+have five sub-directories - `2015`, `2016`, `2017`, `2018`, and `2019` - each containing at-bat records for that season. 
+If using the pre-constructed at-bat records, step 2 below can be skipped.
+
 # 1. Fetching Data
 **Estimated duration:** 10-15 minutes
 
-To fetch data, simply run the [`fetch_data.sh`](fetch_data.sh) script (i.e. `bash fetch_data.sh`).
+To fetch data, simply run the [`fetch_data.sh`](fetch_data.sh) script (also given below).
 By default, this will collect pitch-by-pitch statcast data for 2015-2019, and seasonal statistics back to 1995.
 The script will create a `database` directory and create a database file at `database/mlb.db`. To change where the
 database is placed, change the `DB_FP` variable in the `fetch_data.sh` script to the desired location. If you change the
@@ -44,15 +58,33 @@ season-by-season batting records.
 The workers will periodically print their status, ie how many records have been processed and the current date range
 being processed. Should only take 10-15 minutes on a modern CPU w/ solid-state storage.
 
+**fetch_data.sh:**
+```shell
+#!/bin/bash
+
+export DB_FP="$PWD/database/mlb.db"
+
+# move to source dir
+cd src
+
+# fetch play-by-play data
+python3 fetch_data.py --statcast T --pitching_by_season F --batting_by_season F --start_year 2015 --end_year 2019 \
+                      --n_pybaseball_workers 3 --database_fp $DB_FP
+
+# fetch season-by-season stats
+python3 fetch_data.py --statcast F --pitching_by_season T --batting_by_season T --start_year 1995 --end_year 2019 \
+                      --n_pybaseball_workers 1 --database_fp $DB_FP
+```
+
 # 2. Preparing Training Data
 **Estimated duration:** 65 minutes
 
 The first step in creating the training data is to make a single record for each plate appearance in the newly 
-constructed database. To do so, simply run the [`construct_at_bat_records.sh`](construct_at_bat_records.sh) script. 
-If you created the database in a location other than `database/mlb.db` (i.e. you changed `DB_FP` in the `fetch_data.sh` 
-script), please update that for this script as well. By default, running the script will create a `data/` directory in 
-the repo, and the individual at-bat records will be placed in the `data/ab_seqs/ab_seqs_v1/` directory, grouped by 
-season. The output location can be adjusted by modifying the `AB_OUT_DIR` variable in the script.
+constructed database. To do so, simply run the [`construct_at_bat_records.sh`](construct_at_bat_records.sh) script (also
+given below). If you created the database in a location other than `database/mlb.db` (i.e. you changed `DB_FP` in the 
+`fetch_data.sh` script), please update that for this script as well. By default, running the script will create a 
+`data/` directory in the repo, and the individual at-bat records will be placed in the `data/ab_seqs/ab_seqs_v1/` 
+directory, grouped by season. The output location can be adjusted by modifying the `AB_OUT_DIR` variable in the script.
 
 In a system with a modern CPU and solid-state storage, it will take roughly 4.5 seconds to construct the at-bats for an
 individual game. By default, the script will try to utilize 4 threads to construct the records. This can be adjusted
@@ -69,6 +101,42 @@ Finally, the script will create whole game records that will be used later on. T
 games in terms of the starting batters, pitchers, location, score, and hits among others. By default, the records will
 be placed in the `data/whole_game_records/by_season` directory in the repo. This phase should only take around five 
 minutes.
+
+**construct_at_bat_records.sh:**
+```shell
+#!/bin/bash
+
+export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
+export CAREER_OUT_DIR="$PWD/data/player_career_data"
+export WHOLE_GAME_OUT_DIR="$PWD/data/whole_game_records/by_season"
+
+export DB_FP="$PWD/database/mlb.db"
+export N_WORKERS=16
+
+# move to source dir
+cd src
+
+echo "***************************"
+echo "* Building at-bat records *"
+echo "***************************"
+python3 construct_at_bat_records.py --start_year 2015 --end_year 2019 --n_workers $N_WORKERS \
+                                    --out "$AB_OUT_DIR" --db_fp "$DB_FP"
+
+echo "********************************"
+echo "* Building pitcher career data *"
+echo "********************************"
+python3 construct_player_career_records.py --player_type "pitcher" --db_fp "$DB_FP" --outdir "$CAREER_OUT_DIR"
+
+echo "*******************************"
+echo "* Building batter career data *"
+echo "*******************************"
+python3 construct_player_career_records.py --player_type "batter" --db_fp "$DB_FP" --outdir "$CAREER_OUT_DIR"
+
+echo "*******************************"
+echo "* Creating whole game records *"
+echo "*******************************"
+python3 create_whole_game_records.py --data "$AB_OUT_DIR" --out "$WHOLE_GAME_OUT_DIR"
+```
 
 # 3. Training Player _Form_ Models
 **Estimated duration:** 2.5 days (pitchers), 3 days (batters)
@@ -89,10 +157,55 @@ litte more than 3 days to train (~80 hours) while the pitcher model will take ab
 A6000 GPU's. We also provide the trained model weights in the [`pretrained_models`](pretrained_models) directory in the
 repo.
 
+**batter_form_modeling.sh:**
+```shell
+#!/bin/bash
+
+export CUDA_VISIBLE_DEVICES=0
+
+export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
+export CAREER_OUT_DIR="$PWD/data/player_career_data"
+
+cd src/
+
+python3 run_player_form_modeling.py --player_type "batter" --epochs 370 --batch_size 256 \
+                                    --min_view_step_size 1 --max_view_step_size 5 --view_size 15 \
+                                    --form_ab_window_size 20 --min_form_ab_window_size 20 \
+                                    --min_ab_to_be_included_in_dataset 40 \
+                                    --max_seq_len 200 --max_view_len 125 \
+                                    --distribution_based_player_sampling_prob 0.25 \
+                                    --mask_override_prob 0.15 --n_warmup_iters 2000 \
+                                    --n_data_workers 4 --gpus 0 --port 12345 \
+                                    --ab_data "$AB_OUT_DIR" --career_data "$CAREER_OUT_DIR"
+```
+
+**pitcher_form_modeling.sh:**
+```shell
+#!/bin/bash
+
+export CUDA_VISIBLE_DEVICES=0,1
+
+export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
+export CAREER_OUT_DIR="$PWD/data/player_career_data"
+
+cd src/
+
+python3 run_player_form_modeling.py --player_type "pitcher" --epochs 175 --save_model_every 5 --batch_size 48 \
+                                    --min_view_step_size 1 --max_view_step_size 15 --view_size 60 \
+                                    --form_ab_window_size 75 --min_form_ab_window_size 70 \
+                                    --min_ab_to_be_included_in_dataset 100 \
+                                    --max_seq_len 550 --max_view_len 420 \
+                                    --distribution_based_player_sampling_prob 0.25 \
+                                    --mask_override_prob 0.15 --n_warmup_iters 4000 \
+                                    --n_data_workers 4 --gpus 0 1 --port 12345 \
+                                    --ab_data "$AB_OUT_DIR" --career_data "$CAREER_OUT_DIR"
+```
+
 # 4. Describing Player _Form_
 **Estimated duration:** 25 minutes (pitchers), 60 minutes (batters)
 
-The [`describe_player_forms.sh`](describe_player_forms.sh) script is provided for you to describe the form of players in
+The [`describe_player_forms.sh`](describe_player_forms.sh) script (also given below) is provided for you to describe the 
+form of players in
 the starting lineup for games from 2015-2019. Please remember to update the `FORM_OUT_DIR`, `AB_OUT_DIR`, 
 `CAREER_OUT_DIR`, and `WHOLE_GAME_OUT_DIR` variables in the script if you have changed them in any of the previous 
 scripts. If ran as given, the script will describe **batter** form using the provided pretrained batter model. To 
@@ -110,22 +223,70 @@ batters and 3 threads for pitchers. With these parameters, it will take ~12 minu
 and ~5 minutes for a season on pitchers. If you wish to use a different number of threads, change `--n_workers` to the 
 desired value.
 
+**describe_player_forms.sh:**
+```shell
+#!/bin/bash
+
+export FORM_OUT_DIR="$PWD/out/forms"
+export AB_OUT_DIR="$PWD/data/ab_seqs/ab_seqs_v1"
+export CAREER_OUT_DIR="$PWD/data/player_career_data"
+export WHOLE_GAME_OUT_DIR="$PWD/data/whole_game_records"
+
+export BATTER_MODEL_FP="$PWD/pretrained_models/batter_form_model/models/model_370e.pt"
+export PITCHER_MODEL_FP="$PWD/pretrained_models/pitcher_form_model/models/model_175e.pt"
+
+# move to source dir
+cd src
+
+echo "***************************"
+echo "* Describing player forms *"
+echo "***************************"
+
+python3 describe_player_forms.py --ab_data "$AB_OUT_DIR" --career_data "$CAREER_OUT_DIR" \
+                                 --whole_game_record_dir "$WHOLE_GAME_OUT_DIR" \
+                                 --model_ckpt "$BATTER_MODEL_FP" --out "$FORM_OUT_DIR" \
+                                 --start_year 2015 --end_year 2019 \
+                                 --n_workers -1 --out_dir_tmplt "{}_form_v1"
+```
+
 # 5. Visualizing Embeddings
 **Estimated duration:** <5 minutes
 
-We present the `visualize_form_embeddings.sh` script to visualize the embeddings that were created in step 4. Before
-actually creating the plots, the script will compute the statistics that will accompany the visualizations (WAR,
-batting average, ERA, salary, etc). The script will create a `bin/` directory in the given `--form_rep_dir` and save
-intermediate data there so it does not need to be computed every time. The initial construction of this data should only
-take a minute or two, and the actual plotting should also only take a minute or two.
+We provide the `visualize_form_embeddings.sh` script (also given below) to visualize the embeddings that were created in 
+step 4. Before actually creating the plots, the script will compute the statistics that will accompany the 
+visualizations (WAR, batting average, ERA, salary, etc). The script will create a `bin/` directory in the given 
+`--form_rep_dir` and save intermediate data there so it does not need to be computed every time. The initial 
+construction of this data should only take a minute or two, and the actual plotting should also only take a minute or 
+two.
 
 tSNE is used to project the _form_ embeddings from their 64-dimensions vector to a 2-D vector. tSNE is a stochastic
-(**random**) process, so the results will not be the same each time the points are projected. To ensure reproducible plots,
-the tSNE projections are saved in the `bin/` folder. Delete this file to create new projections. A small example of the
-embedding visualizations for batters and starting pitchers is given below. A more complete set of batter visualizations 
-can be found [here](figures/batter_form_plots.png) and pitcher visualizations [here](figures/pitcher_form_plots.png).
+(**random**) process, so the results will not be the same each time the points are projected. To ensure reproducible 
+plots, the tSNE projections are saved in the `bin/` folder. Delete this file to create new projections. A small example 
+of the embedding visualizations for batters and starting pitchers is given below. A more complete set of batter 
+visualizations can be found [here](figures/batter_form_plots.png) and pitcher visualizations 
+[here](figures/pitcher_form_plots.png).
 
 ![Example batter form embeddings](figures/succinct_batter_form_plots.png)
 
 ![Example pitcher form embeddings](figures/succinct_pitcher_form_plots.png)
 
+**visualize_form_embeddings.sh:**
+```shell
+#!/bin/bash
+
+export FORM_DIR="$PWD/out/forms/batter_form_v1"
+export WHOLE_GAME_DIR="$PWD/data/whole_game_records"
+
+export DB_FP="$PWD/database/mlb.db"
+
+# move to source dir
+cd src
+
+echo "*******************************"
+echo "* Visualizing form embeddings *"
+echo "*******************************"
+
+python3 visualize_form_embeddings.py --form_rep_dir "$FORM_DIR" --whole_game_records_dir "$WHOLE_GAME_DIR" \
+                                     --db_fp "$DB_FP" --n_workers 12 --stats_mode "F"
+
+```
