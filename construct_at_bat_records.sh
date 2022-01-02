@@ -23,12 +23,14 @@ python3 construct_at_bat_records.py --start_year 2015 --end_year 2019 --n_worker
 echo "********************************"
 echo "* Building pitcher career data *"
 echo "********************************"
-python3 construct_player_career_records.py --player_type "pitcher" --db_fp "$DB_FP" --outdir "$CAREER_OUT_DIR"
+python3 construct_player_career_records.py --player_type "pitcher" --db_fp "$DB_FP" \
+                                           --outdir "$CAREER_OUT_DIR"
 
 echo "*******************************"
 echo "* Building batter career data *"
 echo "*******************************"
-python3 construct_player_career_records.py --player_type "batter" --db_fp "$DB_FP" --outdir "$CAREER_OUT_DIR"
+python3 construct_player_career_records.py --player_type "batter" --db_fp "$DB_FP" \
+                                           --outdir "$CAREER_OUT_DIR"
 
 echo "*******************************"
 echo "* Creating whole game records *"

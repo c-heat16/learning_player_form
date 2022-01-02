@@ -15,5 +15,6 @@ echo "*******************************"
 echo "* Visualizing form embeddings *"
 echo "*******************************"
 
-python3 visualize_form_embeddings.py --form_rep_dir "$FORM_DIR" --whole_game_records_dir "$WHOLE_GAME_DIR" \
+python3 visualize_form_embeddings.py --form_rep_dir "$FORM_DIR" \
+                                     --whole_game_records_dir "$WHOLE_GAME_DIR" \
                                      --db_fp "$DB_FP" --n_workers 12 --stats_mode "F"

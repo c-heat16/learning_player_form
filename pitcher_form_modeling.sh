@@ -9,7 +9,8 @@ export CAREER_OUT_DIR="$PWD/data/player_career_data"
 
 cd src/
 
-python3 run_player_form_modeling.py --player_type "pitcher" --epochs 175 --save_model_every 5 --batch_size 48 \
+python3 run_player_form_modeling.py --player_type "pitcher" --epochs 175 --save_model_every 5 \
+                                    --batch_size 48 \
                                     --min_view_step_size 1 --max_view_step_size 15 --view_size 60 \
                                     --form_ab_window_size 75 --min_form_ab_window_size 70 \
                                     --min_ab_to_be_included_in_dataset 100 \
