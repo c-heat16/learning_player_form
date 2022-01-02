@@ -68,11 +68,13 @@ export DB_FP="$PWD/database/mlb.db"
 cd src
 
 # fetch play-by-play data
-python3 fetch_data.py --statcast T --pitching_by_season F --batting_by_season F --start_year 2015 --end_year 2019 \
+python3 fetch_data.py --statcast T --pitching_by_season F --batting_by_season F \
+                      --start_year 2015 --end_year 2019 \
                       --n_pybaseball_workers 3 --database_fp $DB_FP
 
 # fetch season-by-season stats
-python3 fetch_data.py --statcast F --pitching_by_season T --batting_by_season T --start_year 1995 --end_year 2019 \
+python3 fetch_data.py --statcast F --pitching_by_season T --batting_by_season T \
+                      --start_year 1995 --end_year 2019 \
                       --n_pybaseball_workers 1 --database_fp $DB_FP
 ```
 
@@ -125,12 +127,14 @@ python3 construct_at_bat_records.py --start_year 2015 --end_year 2019 --n_worker
 echo "********************************"
 echo "* Building pitcher career data *"
 echo "********************************"
-python3 construct_player_career_records.py --player_type "pitcher" --db_fp "$DB_FP" --outdir "$CAREER_OUT_DIR"
+python3 construct_player_career_records.py --player_type "pitcher" --db_fp "$DB_FP" \
+                                           --outdir "$CAREER_OUT_DIR"
 
 echo "*******************************"
 echo "* Building batter career data *"
 echo "*******************************"
-python3 construct_player_career_records.py --player_type "batter" --db_fp "$DB_FP" --outdir "$CAREER_OUT_DIR"
+python3 construct_player_career_records.py --player_type "batter" --db_fp "$DB_FP" \
+                                           --outdir "$CAREER_OUT_DIR"
 
 echo "*******************************"
 echo "* Creating whole game records *"
@@ -190,7 +194,8 @@ export CAREER_OUT_DIR="$PWD/data/player_career_data"
 
 cd src/
 
-python3 run_player_form_modeling.py --player_type "pitcher" --epochs 175 --save_model_every 5 --batch_size 48 \
+python3 run_player_form_modeling.py --player_type "pitcher" --epochs 175 --save_model_every 5 \
+                                    --batch_size 48 \
                                     --min_view_step_size 1 --max_view_step_size 15 --view_size 60 \
                                     --form_ab_window_size 75 --min_form_ab_window_size 70 \
                                     --min_ab_to_be_included_in_dataset 100 \
@@ -286,7 +291,8 @@ echo "*******************************"
 echo "* Visualizing form embeddings *"
 echo "*******************************"
 
-python3 visualize_form_embeddings.py --form_rep_dir "$FORM_DIR" --whole_game_records_dir "$WHOLE_GAME_DIR" \
+python3 visualize_form_embeddings.py --form_rep_dir "$FORM_DIR" \
+                                     --whole_game_records_dir "$WHOLE_GAME_DIR" \
                                      --db_fp "$DB_FP" --n_workers 12 --stats_mode "F"
 
 ```
