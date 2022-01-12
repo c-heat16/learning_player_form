@@ -25,9 +25,10 @@ visualizations.
 2. Preparing training data
 3. Training player _form_ models
 4. Describing player _form_
-5. Visualizing embeddings
+5. Visualizing _form_ embeddings
+6. Clustering _form_ embeddings
 
-**Note:** While we provide the code to construct a local database and use it to create at-bat records to train the 
+**NOTE:** While we provide the code to construct a local database and use it to create at-bat records to train the 
 models below, the constructed database and at-bat records can be found [here](https://pennstateoffice365-my.sharepoint.com/:f:/g/personal/czh5372_psu_edu/Eujd0Rhrf5dKgOyJgKyy8T8BS5lsZqEeecSoXTYXleXCIQ?e=CPOfRg).
 The at-bat records are grouped by season and compressed (i.e. `201*.tar.gz`). To extract the data for 2015, for example,
 execute `tar -xzf 2015.tar.gz` command. The database can found in the `mlb.db.tar.gz` file and extracted using the
@@ -254,13 +255,13 @@ python3 describe_player_forms.py --ab_data "$AB_OUT_DIR" --career_data "$CAREER_
                                  --n_workers -1 --out_dir_tmplt "{}_form_v1"
 ```
 
-# 5. Visualizing Embeddings
+# 5. Visualizing _Form_ Embeddings
 **Estimated duration:** <5 minutes
 
-We provide the `visualize_form_embeddings.sh` script (also given below) to visualize the embeddings that were created in 
-step 4. Before actually creating the plots, the script will compute the statistics that will accompany the 
-visualizations (WAR, batting average, ERA, salary, etc). The script will create a `bin/` directory in the given 
-`--form_rep_dir` and save intermediate data there so it does not need to be computed every time. The initial 
+We provide the [`visualize_form_embeddings.sh`](visualize_form_embeddings.sh) script (also given below) to visualize the
+embeddings that were created in step 4. Before actually creating the plots, the script will compute the statistics that 
+will accompany the visualizations (WAR, batting average, ERA, salary, etc). The script will create a `bin/` directory in
+the given `--form_rep_dir` and save intermediate data there so it does not need to be computed every time. The initial 
 construction of this data should only take a minute or two, and the actual plotting should also only take a minute or 
 two.
 
@@ -294,5 +295,53 @@ echo "*******************************"
 python3 visualize_form_embeddings.py --form_rep_dir "$FORM_DIR" \
                                      --whole_game_records_dir "$WHOLE_GAME_DIR" \
                                      --db_fp "$DB_FP" --n_workers 12 --stats_mode "F"
+```
 
+# 6. Clustering _Form_ Embeddings
+**Estimated dution:** Varies based on system
+
+**NOTE:** A machine with a very high amount of RAM is required to perform the clustering described in this section. For
+example, a machine with 512GB RAM was used in the paper.
+
+We provide the [`cluster_player_forms_and_plot.sh`](cluster_player_forms_and_plot.sh) script to, as the name suggests,
+clusters the _form_ vectors to obtain discrete _form_ IDs, and then plots the discrete _form_ ID of select players at
+game-start time for games from 2015-2019. The script has two phases: 1) cluster player _forms_ and 2) inspect _form_ 
+clusters. Phase 1 of the script requires a significant amount of RAM to run. A system with 512 RAM was used to obtain 
+the results presented in the paper. A personal computer will not be able to handle the data. Phase 2 should take less 
+than one minute.
+
+By default, the script expects form records to be present in `out/forms/batter_form_v1` in the repository, as defined by
+the `FORM_DIR` variable. This is the default output location for the script presented above in step 4. The default 
+output location for _pitcher_ form is commented out in line 4 of the script. If you change the `FORM_DIR` variable, 
+please be sure to change the `CLUSTER_OUT_DIR` variable to an appropriate, corresponding location. The 
+`WHOLE_GAME_RECORD_DIR` variable should correspond to the `WHOLE_GAME_OUT_DIR` variable defined in 
+[`construct_at_bat_records.sh`](construct_at_bat_records.sh) in step 2.
+
+The script is configured to cluster batters using 75, 50, and 25 clusters and pitchers using 32, 16, and 8 clusters. By
+default, the script will process the _form_ IDs when 75 clusters were used. This can be changed by modifying the 
+`CLUSTER_TO_PLOT` value. 
+
+```shell
+#!/bin/bash
+
+export FORM_DIR="$PWD/out/forms/batter_form_v1"
+export CLUSTER_OUT_DIR="$PWD/out/form_cluster/batter1_agglom"
+export WHOLE_GAME_RECORD_DIR="$PWD/data/whole_game_records/by_season"
+
+export CLUSTER_TO_PLOT="$CLUSTER_OUT_DIR/mappings/cluster_map_k75.json"
+export FIG_OUT_DIR="$CLUSTER_OUT_DIR/eval"
+
+# move to source dir
+cd src
+
+echo "***************************"
+echo "* Clustering player forms *"
+echo "***************************"
+python3 cluster_player_forms.py --data "$FORM_DIR" --out "$CLUSTER_OUT_DIR"
+
+echo "**************************"
+echo "* Plotting form clusters *"
+echo "**************************"
+python3 inspect_form_clusters.py --data "$CLUSTER_TO_PLOT" --out "$FIG_OUT_DIR" \
+                                 --whole_game_records_dir "$WHOLE_GAME_RECORD_DIR"
 ```
