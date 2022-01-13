@@ -373,12 +373,6 @@ if __name__ == '__main__':
                                                    ], type=str, nargs='+',
                         help='FPs w/ corrupted data (likely b/c statcast)')
     parser.add_argument('--arg_out_file', default='args.txt', help='File to write cli args to')
-    # parser.add_argument('--player_id_to_n_pitches_map_fp',
-    #                     default='/home/czh/sata1/learning_player_form/whole_game_records/'
-    #                             'game_event_splits/stats/player_n_apps.json')
-    # parser.add_argument('--norm_vals_fp',
-    #                     default='/home/czh/sata1/learning_player_form/whole_game_records/'
-    #                             'game_event_splits/stats/max_values.json')
     parser.add_argument('--norm_vals_fp', default='../config/max_values.json')
 
     parser.add_argument('--cls_to_return', default='proj')
