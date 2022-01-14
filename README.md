@@ -1,4 +1,4 @@
-# Learning to Describe How Players Impact the Game in the MLB
+# Using Machine Learning to Describe how Players Impact the Game in the MLB
 This repository contains the elements necessary to describe how players in the MLB impact the game over the short term,
 which we colloquially refer to as their _form_. The corresponding paper, accepted at MIT SSAC '22, can be found [here](resources/ml_in_game_events_mlb.docx).
 Concretely, player _form_ is described by a numerical vector derived from the sequence of in-game events in which the 
