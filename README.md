@@ -1,14 +1,14 @@
 # Learning to Describe How Players Impact the Game in the MLB
 This repository contains the elements necessary to describe how players in the MLB impact the game over the short term,
-which we colloquially refer to as their _form_. Concretely, player _form_ is described by a numerical vector derived 
-from the sequence of in-game events in which the player participated. The steps described below will guide you through
-the process from start to finish - collecting the data, training the model, describing player _form_, and visualizing 
-the produced _form_ embeddings. We present a small comparison of _form-_ vs _statistic-_ based embedding visualizations 
-below. A more complete set of batter visualizations can be found [here](figures/batter_form_plots.png) and pitcher
-visualizations [here](figures/pitcher_form_plots.png) (these more complete visualizations will also be created in step
-5 below).
+which we colloquially refer to as their _form_. The corresponding paper, accepted at MIT SSAC '22, can be found [here](resources/ml_in_game_events_mlb.docx).
+Concretely, player _form_ is described by a numerical vector derived from the sequence of in-game events in which the 
+player participated. The steps described below will guide you through the process from start to finish - collecting the 
+data, training the model, describing player _form_, and visualizing the produced _form_ embeddings. We present a small 
+comparison of _form-_ vs _statistic-_ based embedding visualizations below. A more complete set of batter visualizations
+can be found [here](resources/batter_form_plots.png) and pitcher visualizations [here](resources/pitcher_form_plots.png)
+(these more complete visualizations will also be created in step 5 below).
 
-![Embedding comparison](figures/stat_vs_form_comp.png)
+![Embedding comparison](resources/stat_vs_form_comp.png)
 
 In general, we find that both _form-_ and _statistic-_ based embeddings do a good job of differentiating the "good"
 players form the "bad" ones, but that the _form-_ based embeddings are better suited for highlighting the manner in
@@ -291,12 +291,12 @@ tSNE is used to project the _form_ embeddings from their 64-dimensions vector to
 (**random**) process, so the results will not be the same each time the points are projected. To ensure reproducible 
 plots, the tSNE projections are saved in the `bin/` folder. Delete this file to create new projections. A small example 
 of the embedding visualizations for batters and starting pitchers is given below. A more complete set of batter 
-visualizations can be found [here](figures/batter_form_plots.png) and pitcher visualizations 
-[here](figures/pitcher_form_plots.png).
+visualizations can be found [here](resources/batter_form_plots.png) and pitcher visualizations 
+[here](resources/pitcher_form_plots.png).
 
-![Example batter form embeddings](figures/succinct_batter_form_plots.png)
+![Example batter form embeddings](resources/succinct_batter_form_plots.png)
 
-![Example pitcher form embeddings](figures/succinct_pitcher_form_plots.png)
+![Example pitcher form embeddings](resources/succinct_pitcher_form_plots.png)
 
 **visualize_form_embeddings.sh:**
 ```shell
