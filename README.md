@@ -454,7 +454,7 @@ python3 basic_parm_search.py --use_stats T --use_form T --use_meta T \
 ## How can I cite this work? ##
 Please cite the SSAC '22 paper, given below.
 ```
-@inproceedings{heaton2022learning,
+@inproceedings{heaton2022using,
   title={Using Machine Learning to Describe how Players Impact the Game in the MLB},
   author={Heaton, Connor and Mitra, Prasenjit},
   booktitle={The 16th Annual MIT Sloan Sports Analytics Conference},
