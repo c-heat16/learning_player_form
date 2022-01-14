@@ -444,7 +444,8 @@ echo "* Performing Basic Parm Search *"
 echo "********************************"
 python3 basic_parm_search.py --use_stats T --use_form T --use_meta T \
                              --do_rf T --do_logreg F --do_svm F  \
-                             --whole_game_record_dir "$WHOLE_GAME_RECORD_DIR" --splits_basedir "$SPLITS_DIR" \
+                             --whole_game_record_dir "$WHOLE_GAME_RECORD_DIR" \
+                             --splits_basedir "$SPLITS_DIR" \
                              --form_dir "$FORM_VECTOR_DIR" --form_subdir "pca-5" \
                              --game_meta_fp "$TEAM_META_VECTOR_DIR/game_meta_vectors.json" \
                              --out "$PARM_SEARCH_OUT_DIR" --force_new_data T
