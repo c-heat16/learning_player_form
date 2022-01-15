@@ -27,21 +27,22 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def get_game_ids(fp, table_name, reverse_pk_order=False):
+def get_game_ids(fp, table_name, reverse_pk_order=False, start_year=2015, end_year=2019):
     if reverse_pk_order:
         query = """SELECT DISTINCT game_pk 
                    FROM {}
-                   where game_year >= 2015
+                   where game_year >= ? and game_year <= ?
                    ORDER BY game_pk desc""".format(table_name)
     else:
         query = """SELECT DISTINCT game_pk 
                    FROM {}
-                   where game_year >= 2015
+                   where game_year >= ? and game_year <= ?
                    ORDER BY game_pk""".format(table_name)
 
+    query_args = (start_year, end_year)
     conn = sqlite3.connect(fp)
     c = conn.cursor()
-    c.execute(query)
+    c.execute(query, query_args)
     rows = c.fetchall()
 
     game_ids = [r[0] for r in rows]
@@ -54,7 +55,8 @@ def create_whole_game_records(args):
     term_item = args.term_item
 
     print('Getting all game pks...')
-    all_game_pks = get_game_ids(args.db_fp, args.games_table, reverse_pk_order=args.reverse_pk_order)
+    all_game_pks = get_game_ids(args.db_fp, args.games_table, reverse_pk_order=args.reverse_pk_order,
+                                start_year=args.start_year, end_year=args.end_year)
     print('\tFound {} pks...'.format(len(all_game_pks)))
     m = Manager()
     write_q = m.Queue()
