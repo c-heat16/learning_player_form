@@ -18,4 +18,5 @@ python3 run_player_form_modeling.py --player_type "pitcher" --epochs 175 --save_
                                     --distribution_based_player_sampling_prob 0.25 \
                                     --mask_override_prob 0.15 --n_warmup_iters 4000 \
                                     --n_data_workers 4 --gpus 0 1 --port 12345 \
+                                    --n_layers 8 --n_attn 8 --n_proj_layers 2 \
                                     --ab_data "$AB_OUT_DIR" --career_data "$CAREER_OUT_DIR"
