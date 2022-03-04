@@ -68,7 +68,7 @@ class PyBaseballWorker(object):
 
     def query_pitching_by_season(self):
         for range_idx, range_year in enumerate(self.date_ranges):
-            range_data = pb.pitching_stats(range_year)
+            range_data = pb.pitching_stats(range_year, qual=-1)
             range_data['Dollars'].apply(remove_dollar_sign)
 
             for item_data in range_data.values.tolist():
@@ -88,7 +88,7 @@ class PyBaseballWorker(object):
 
     def query_batting_by_season(self):
         for range_idx, range_year in enumerate(self.date_ranges):
-            range_data = pb.batting_stats(range_year)
+            range_data = pb.batting_stats(range_year, qual=-1)
             range_data['Dol'].apply(remove_dollar_sign)
 
             for item_data in range_data.values.tolist():
