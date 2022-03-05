@@ -358,35 +358,35 @@ if __name__ == '__main__':
             all_test_x.append(stat_test_x)
             data_desc.append('stats')
 
-        train_x = np.concatenate(all_train_x, axis=-1)
-        test_x = np.concatenate(all_test_x, axis=-1)
-        print('train_x: {} test_x: {}'.format(train_x.shape, test_x.shape))
+    train_x = np.concatenate(all_train_x, axis=-1)
+    test_x = np.concatenate(all_test_x, axis=-1)
+    print('train_x: {} test_x: {}'.format(train_x.shape, test_x.shape))
 
-        train_y = np.load(victor_labels_train_y_fp)
-        test_y = np.load(victor_labels_test_y_fp)
-        print('train_y: {} test_y: {}'.format(train_y.shape, test_y.shape))
-        u_test_y, cnt_test_y = np.unique(test_y, return_counts=True)
-        comb_y_meta = sorted(zip(u_test_y, cnt_test_y), key=lambda x: x[0], reverse=False)
-        for u_y, cnt_y in comb_y_meta:
-            print('u_y: {}\tcnt_y: {}'.format(u_y, cnt_y))
+    train_y = np.load(victor_labels_train_y_fp)
+    test_y = np.load(victor_labels_test_y_fp)
+    print('train_y: {} test_y: {}'.format(train_y.shape, test_y.shape))
+    u_test_y, cnt_test_y = np.unique(test_y, return_counts=True)
+    comb_y_meta = sorted(zip(u_test_y, cnt_test_y), key=lambda x: x[0], reverse=False)
+    for u_y, cnt_y in comb_y_meta:
+        print('u_y: {}\tcnt_y: {}'.format(u_y, cnt_y))
 
-        data_desc = '-'.join(data_desc)
-        print('data_desc: {}'.format(data_desc))
-        curr_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    data_desc = '-'.join(data_desc)
+    print('data_desc: {}'.format(data_desc))
+    curr_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
-        if args.do_rf:
-            out_dir = os.path.join(args.out, 'rf_clf_parm_search_{}_{}'.format(data_desc, curr_time))
-            # out_fp = os.path.join(out_dir, 'model_scores.csv')
-            print('out_fp: {}'.format(out_dir))
-            rf_clf_parm_search(out_dir, args, train_x, train_y, test_x, test_y)
-        elif args.do_logreg:
-            out_fp = os.path.join(args.out, 'logreg_clf_parm_search_{}_{}.csv'.format(data_desc, curr_time))
-            print('out_fp: {}'.format(out_fp))
-            logreg_clf_parm_search(out_fp, args, train_x, train_y, test_x, test_y)
-        elif args.do_svm:
-            out_fp = os.path.join(args.out, 'svm_clf_parm_search_{}_{}.csv'.format(data_desc, curr_time))
-            print('out_fp: {}'.format(out_fp))
-            svm_clf_parm_search(out_fp, args, train_x, train_y, test_x, test_y)
+    if args.do_rf:
+        out_dir = os.path.join(args.out, 'rf_clf_parm_search_{}_{}'.format(data_desc, curr_time))
+        # out_fp = os.path.join(out_dir, 'model_scores.csv')
+        print('out_fp: {}'.format(out_dir))
+        rf_clf_parm_search(out_dir, args, train_x, train_y, test_x, test_y)
+    elif args.do_logreg:
+        out_fp = os.path.join(args.out, 'logreg_clf_parm_search_{}_{}.csv'.format(data_desc, curr_time))
+        print('out_fp: {}'.format(out_fp))
+        logreg_clf_parm_search(out_fp, args, train_x, train_y, test_x, test_y)
+    elif args.do_svm:
+        out_fp = os.path.join(args.out, 'svm_clf_parm_search_{}_{}.csv'.format(data_desc, curr_time))
+        print('out_fp: {}'.format(out_fp))
+        svm_clf_parm_search(out_fp, args, train_x, train_y, test_x, test_y)
 
 
 
